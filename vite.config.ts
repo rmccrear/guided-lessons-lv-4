@@ -17,6 +17,8 @@ export default defineConfig({
     // The CODESPACES env var is set to 'true' when running in GitHub Codespaces
     'process.env.GITHUB_TOKEN': JSON.stringify(
       process.env.CODESPACES === 'true' ? process.env.GITHUB_TOKEN || '' : ''
-    )
+    ),
+    // Bake the repository name into the build for linking back to source
+    'process.env.GITHUB_REPOSITORY': JSON.stringify(process.env.GITHUB_REPOSITORY || '')
   }
 })
