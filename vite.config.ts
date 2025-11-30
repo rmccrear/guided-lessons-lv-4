@@ -4,9 +4,11 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Sets the base path to relative './' which ensures assets load correctly
-  // regardless of the repository name on GitHub Pages.
-  base: './', 
+  // Automatically use the repo name from GITHUB_REPOSITORY (e.g., 'username/repo-name')
+  // Falls back to './' for local development
+  base: process.env.GITHUB_REPOSITORY 
+    ? `/${process.env.GITHUB_REPOSITORY.split('/')[1]}/`
+    : './',
   define: {
     // We use JSON.stringify to correctly replace the variable with a string literal
     // This targets the specific key to avoid overwriting the entire process.env object
