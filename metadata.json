@@ -1,0 +1,5 @@
+{
+  "name": "SQL Guided Learning",
+  "description": "A guided SQL curriculum for bootcamp students, covering SQL Zoo basics, Supabase implementation, and data aggregation challenges.",
+  "requestFramePermissions": []
+}
