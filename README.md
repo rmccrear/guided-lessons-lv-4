@@ -2,6 +2,7 @@
 
 A React-based interactive curriculum designed for coding bootcamp students. This application guides users through SQL basics using SQL Zoo, Supabase implementation, and advanced data aggregation challenges.
 
+
 ## Features
 
 *   **Interactive Curriculum**: Step-by-step lessons ranging from basic SELECT statements to complex aggregations.
