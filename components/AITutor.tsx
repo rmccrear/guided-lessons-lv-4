@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { sendMessageToGitHubModels } from '../services/gitHubModelsService';
+import { sendMessageToGitHubModels, generateChatGPTPrompt } from '../services/gitHubModelsService';
 import { ChatMessage, Lesson } from '../types';
-import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Loader2, Sparkles, Copy, Check } from 'lucide-react';
 
 interface AITutorProps {
   contextLesson: Lesson;
@@ -17,6 +17,7 @@ export const AITutor: React.FC<AITutorProps> = ({ contextLesson }) => {
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom on new message
@@ -49,7 +50,7 @@ export const AITutor: React.FC<AITutorProps> = ({ contextLesson }) => {
       content: m.text 
     }));
 
-    const responseText = await sendMessageToGitHubModels(apiHistory, input, contextLesson.title);
+    const responseText = await sendMessageToGitHubModels(apiHistory, input, contextLesson);
 
     const modelMsg: ChatMessage = { role: 'model', text: responseText, timestamp: Date.now() };
     setMessages(prev => [...prev, modelMsg]);
@@ -60,6 +61,21 @@ export const AITutor: React.FC<AITutorProps> = ({ contextLesson }) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const handleCopyPrompt = async () => {
+    const prompt = generateChatGPTPrompt(
+      contextLesson, 
+      messages.map(m => ({ role: m.role, text: m.text })),
+      input
+    );
+    try {
+      await navigator.clipboard.writeText(prompt);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
   };
 
@@ -134,6 +150,13 @@ export const AITutor: React.FC<AITutorProps> = ({ contextLesson }) => {
         <div className="mt-2 flex items-center justify-center gap-2 text-xs text-gray-500">
             <Sparkles size={12} />
             <span>Powered by GitHub Models (GPT-4o mini)</span>
+            <button
+              onClick={handleCopyPrompt}
+              className="ml-2 p-1 text-gray-500 hover:text-gray-300 transition-colors"
+              title="Copy prompt for ChatGPT"
+            >
+              {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+            </button>
         </div>
       </div>
     </div>
