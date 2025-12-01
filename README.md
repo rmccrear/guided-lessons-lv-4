@@ -1,4 +1,4 @@
-# SQL Guided Learning
+# Guided Learning for Level 4
 
 A React-based interactive curriculum designed for coding bootcamp students. This application guides users through SQL basics using SQL Zoo, Supabase implementation, and advanced data aggregation challenges.
 
