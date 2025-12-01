@@ -7,30 +7,26 @@ import { Lesson, LessonStatus } from './types';
 import { LESSONS } from './constants';
 import { Menu, X, GraduationCap, MessageSquareText, LayoutGrid } from 'lucide-react';
 import Course from './components/Course';
+import { CHAPTERS } from './data/chapters-constants';
+import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom';
 
-type Route =
-  | { view: 'course' }
-  | { view: 'lesson'; lessonId?: string };
-
-function parseRouteFromHash(hash: string): Route {
-  const clean = (hash || '').replace(/^#/, '');
-  if (!clean) return { view: 'course' };
-  const parts = clean.split('/').filter(Boolean);
-  if (parts[0] === 'course') return { view: 'course' };
-  if (parts[0] === 'lesson') return { view: 'lesson', lessonId: parts[1] };
-  return { view: 'course' };
-}
-
-export default function App() {
+function LessonShell() {
+  const navigate = useNavigate();
+  const params = useParams<{ chapterSlug: string; lessonId: string }>();
   const [currentLessonIndex, setCurrentLessonIndex] = useState<number>(0);
   const [lessonStatus, setLessonStatus] = useState<Record<string, LessonStatus>>({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isTutorOpen, setIsTutorOpen] = useState(false);
-  const [route, setRoute] = useState<Route>(() => parseRouteFromHash(window.location.hash));
 
   const indexById = useMemo(() => {
     const map: Record<string, number> = {};
     LESSONS.forEach((l, i) => (map[l.id] = i));
+    return map;
+  }, []);
+
+  const chapterByLessonId = useMemo(() => {
+    const map: Record<string, string> = {};
+    CHAPTERS.forEach((ch) => ch.lessons.forEach((l) => (map[l.id] = ch.slug)));
     return map;
   }, []);
 
@@ -43,28 +39,15 @@ export default function App() {
     setLessonStatus(initialStatus);
   }, []);
 
-  // Initialize default route and listen for hash changes
+  // Sync lesson index from params
   useEffect(() => {
-    if (!window.location.hash) {
-      window.location.hash = '#/course';
+    const lessonId = params.lessonId;
+    if (lessonId) {
+      const idx = indexById[lessonId];
+      if (typeof idx === 'number') setCurrentLessonIndex(idx);
+      else setCurrentLessonIndex(0);
     }
-    const onHashChange = () => setRoute(parseRouteFromHash(window.location.hash));
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
-
-  // When route indicates a lesson, sync currentLessonIndex
-  useEffect(() => {
-    if (route.view === 'lesson' && route.lessonId) {
-      const idx = indexById[route.lessonId];
-      if (typeof idx === 'number') {
-        setCurrentLessonIndex(idx);
-      } else {
-        // Fallback to first lesson if not found
-        setCurrentLessonIndex(0);
-      }
-    }
-  }, [route, indexById]);
+  }, [params.lessonId, indexById]);
 
   const handleLessonSelect = (index: number) => {
     setCurrentLessonIndex(index);
@@ -74,7 +57,8 @@ export default function App() {
     }
     const target = LESSONS[index];
     if (target?.id) {
-      window.location.hash = `#/lesson/${target.id}`;
+      const chapterSlug = chapterByLessonId[target.id] || 'sql-intro';
+      navigate(`/${chapterSlug}/${target.id}`);
     }
   };
 
@@ -97,26 +81,17 @@ export default function App() {
     }
   };
 
-  const openCourse = () => {
-    window.location.hash = '#/course';
-  };
+  const openCourse = () => navigate('/');
 
-  const handleOpenChapter = (chapter: { lessons?: Lesson[] }) => {
+  const handleOpenChapter = (chapter: { slug: string; lessons?: Lesson[] }) => {
     const first = chapter.lessons?.[0];
-    if (first?.id) {
-      window.location.hash = `#/lesson/${first.id}`;
-    }
+    if (first?.id) navigate(`/${chapter.slug}/${first.id}`);
   };
 
   const currentLesson = LESSONS[currentLessonIndex];
   const progress = Math.round(
     (Object.values(lessonStatus).filter((s: LessonStatus) => s.completed).length / LESSONS.length) * 100
   );
-
-  // Course route renders standalone Course layout
-  if (route.view === 'course') {
-    return <Course onOpenChapter={handleOpenChapter} />;
-  }
 
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden font-sans">
@@ -230,5 +205,24 @@ export default function App() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function App() {
+  const CourseWrapper = () => {
+    const navigate = useNavigate();
+    const onOpenChapter = (chapter: { slug: string; lessons?: Lesson[] }) => {
+      const first = chapter.lessons?.[0];
+      if (first?.id) navigate(`/${chapter.slug}/${first.id}`);
+    };
+    return <Course onOpenChapter={onOpenChapter} />;
+  };
+
+  return (
+    <Routes>
+      <Route path="/" element={<CourseWrapper />} />
+      <Route path=":chapterSlug/:lessonId" element={<LessonShell />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
