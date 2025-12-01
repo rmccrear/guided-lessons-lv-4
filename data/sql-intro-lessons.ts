@@ -1,8 +1,6 @@
-import { Lesson } from './types';
+import { Lesson } from '../types';
 
-// Re-export from data directory for backwards compatibility
-export { SQL_INTRO_LESSONS as LESSONS } from './data/sql-intro-lessons';
-
+export const SQL_INTRO_LESSONS: Lesson[] = [
   {
     id: 'intro',
     title: 'What is SQL Zoo?',
