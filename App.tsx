@@ -1,17 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { LessonView } from './components/LessonView';
 import { AITutor } from './components/AITutor';
 import { ActivityBar } from './components/ActivityBar';
 import { Lesson, LessonStatus } from './types';
 import { LESSONS } from './constants';
-import { Menu, X, GraduationCap, MessageSquareText } from 'lucide-react';
+import { Menu, X, GraduationCap, MessageSquareText, LayoutGrid } from 'lucide-react';
+import Course from './components/Course';
+
+type Route =
+  | { view: 'course' }
+  | { view: 'lesson'; lessonId?: string };
+
+function parseRouteFromHash(hash: string): Route {
+  const clean = (hash || '').replace(/^#/, '');
+  if (!clean) return { view: 'course' };
+  const parts = clean.split('/').filter(Boolean);
+  if (parts[0] === 'course') return { view: 'course' };
+  if (parts[0] === 'lesson') return { view: 'lesson', lessonId: parts[1] };
+  return { view: 'course' };
+}
 
 export default function App() {
   const [currentLessonIndex, setCurrentLessonIndex] = useState<number>(0);
   const [lessonStatus, setLessonStatus] = useState<Record<string, LessonStatus>>({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isTutorOpen, setIsTutorOpen] = useState(false);
+  const [route, setRoute] = useState<Route>(() => parseRouteFromHash(window.location.hash));
+
+  const indexById = useMemo(() => {
+    const map: Record<string, number> = {};
+    LESSONS.forEach((l, i) => (map[l.id] = i));
+    return map;
+  }, []);
 
   // Initialize status on load
   useEffect(() => {
@@ -22,11 +43,38 @@ export default function App() {
     setLessonStatus(initialStatus);
   }, []);
 
+  // Initialize default route and listen for hash changes
+  useEffect(() => {
+    if (!window.location.hash) {
+      window.location.hash = '#/course';
+    }
+    const onHashChange = () => setRoute(parseRouteFromHash(window.location.hash));
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  // When route indicates a lesson, sync currentLessonIndex
+  useEffect(() => {
+    if (route.view === 'lesson' && route.lessonId) {
+      const idx = indexById[route.lessonId];
+      if (typeof idx === 'number') {
+        setCurrentLessonIndex(idx);
+      } else {
+        // Fallback to first lesson if not found
+        setCurrentLessonIndex(0);
+      }
+    }
+  }, [route, indexById]);
+
   const handleLessonSelect = (index: number) => {
     setCurrentLessonIndex(index);
     // On mobile, close sidebar after selection
     if (window.innerWidth < 768) {
       setIsSidebarOpen(false);
+    }
+    const target = LESSONS[index];
+    if (target?.id) {
+      window.location.hash = `#/lesson/${target.id}`;
     }
   };
 
@@ -49,10 +97,26 @@ export default function App() {
     }
   };
 
+  const openCourse = () => {
+    window.location.hash = '#/course';
+  };
+
+  const handleOpenChapter = (chapter: { lessons?: Lesson[] }) => {
+    const first = chapter.lessons?.[0];
+    if (first?.id) {
+      window.location.hash = `#/lesson/${first.id}`;
+    }
+  };
+
   const currentLesson = LESSONS[currentLessonIndex];
   const progress = Math.round(
     (Object.values(lessonStatus).filter((s: LessonStatus) => s.completed).length / LESSONS.length) * 100
   );
+
+  // Course route renders standalone Course layout
+  if (route.view === 'course') {
+    return <Course onOpenChapter={handleOpenChapter} />;
+  }
 
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden font-sans">
@@ -96,7 +160,16 @@ export default function App() {
             </div>
           </div>
           
-          <button
+          <div className="flex items-center gap-2">
+            <button
+              onClick={openCourse}
+              className="flex items-center gap-2 px-3 py-2 rounded-full border bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600"
+              title="Go to Course Overview"
+            >
+              <LayoutGrid size={18} />
+              <span className="hidden sm:inline">Course</span>
+            </button>
+            <button
             onClick={() => setIsTutorOpen(!isTutorOpen)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-colors ${
               isTutorOpen 
@@ -106,7 +179,8 @@ export default function App() {
           >
             <MessageSquareText size={18} />
             <span className="hidden sm:inline">AI Tutor</span>
-          </button>
+            </button>
+          </div>
         </header>
 
         {/* Activity Bar */}
