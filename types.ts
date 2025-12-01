@@ -25,6 +25,14 @@ export interface Lesson {
   };
 }
 
+export interface Chapter {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  lessons: Lesson[];
+}
+
 export interface LessonStatus {
   completed: boolean;
 }
