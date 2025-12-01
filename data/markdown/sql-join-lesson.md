@@ -26,10 +26,13 @@ In our Potluck app:
 * An **Event** (like "Thanksgiving") has many **Meals**.
 * A **Meal** (like "Turkey") belongs to one **Event**.
 
+To visualize this, think of a **Folder** on your computer containing **Files**.
+* The **Folder** (Event) is the container.
+* The **Files** (Meals) are inside it.
+* One Folder holds many Files.
+* One File belongs to only one Folder.
 
-
-[Image of SQL one to many relationship diagram]
-
+In database terms, the 'Child' (Meal) holds a reference pointing back to its 'Parent' (Event).
 
 ## Concept: Primary vs. Foreign Keys
 
@@ -61,10 +64,11 @@ Look at this data from **SQL Zoo**:
 
 **User Story:** As a data analyst, I want to combine data from two tables so that I can see player names and stadium names in the same result.
 
+Imagine you have two separate spreadsheets printed out on paper.
+* **Sheet A (Game):** Lists every match with an ID.
+* **Sheet B (Goal):** Lists every goal with a reference to a match ID.
 
-
-[Image of SQL join venn diagram]
-
+To combine them, you would place Sheet B next to Sheet A, lining up every Goal row next to the specific Game row it belongs to. That alignment process is exactly what a `JOIN` does. It stitches the rows together wherever the IDs match.
 
 ### Instructions
 1.  Open the [SQL Zoo JOIN Operation](https://sqlzoo.net/wiki/The_JOIN_operation) tutorial.

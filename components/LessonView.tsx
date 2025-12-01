@@ -16,6 +16,8 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
   const lines = content.split('\n');
   const elements: React.ReactNode[] = [];
   let currentList: React.ReactNode[] = [];
+  let currentTable: string[] = [];
+  let inTable = false;
 
   const flushList = (keyPrefix: number) => {
     if (currentList.length > 0) {
@@ -26,6 +28,83 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
       );
       currentList = [];
     }
+  };
+
+  const flushTable = (keyPrefix: number) => {
+    if (currentTable.length === 0) return;
+    
+    // Parse table rows
+    const rows: string[][] = [];
+    let headerRow: string[] = [];
+    let alignments: string[] = [];
+    
+    currentTable.forEach((row, idx) => {
+      // Split by | and filter out empty strings, but keep track of all positions
+      const cells = row.split('|').map(c => c.trim());
+      // Remove first and last if they're empty (from leading/trailing |)
+      const cleanCells = cells.filter((c, i) => !(i === 0 && c === '') && !(i === cells.length - 1 && c === ''));
+      
+      if (idx === 0) {
+        headerRow = cleanCells;
+      } else if (idx === 1) {
+        // This is the separator row, extract alignments
+        alignments = cleanCells.map(cell => {
+          if (cell.startsWith(':') && cell.endsWith(':')) return 'center';
+          if (cell.endsWith(':')) return 'right';
+          return 'left';
+        });
+        // Ensure we have alignments for all headers
+        while (alignments.length < headerRow.length) {
+          alignments.push('left');
+        }
+      } else {
+        rows.push(cleanCells);
+      }
+    });
+    
+    if (headerRow.length > 0) {
+      elements.push(
+        <div key={`table-${keyPrefix}`} className="my-6 overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-700 bg-gray-800/50">
+            <thead>
+              <tr>
+                {headerRow.map((header, idx) => (
+                  <th
+                    key={idx}
+                    className={`border border-gray-700 px-4 py-3 text-left font-semibold text-white bg-gray-900/50 ${
+                      alignments[idx] === 'center' ? 'text-center' : 
+                      alignments[idx] === 'right' ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    {parseInline(header)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, rowIdx) => (
+                <tr key={rowIdx} className="hover:bg-gray-800/30">
+                  {headerRow.map((_, cellIdx) => (
+                    <td
+                      key={cellIdx}
+                      className={`border border-gray-700 px-4 py-3 text-gray-300 ${
+                        alignments[cellIdx] === 'center' ? 'text-center' : 
+                        alignments[cellIdx] === 'right' ? 'text-right' : 'text-left'
+                      }`}
+                    >
+                      {parseInline(row[cellIdx] || '')}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+    
+    currentTable = [];
+    inTable = false;
   };
 
   const parseInline = (text: string) => {
@@ -64,11 +143,34 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
 
   lines.forEach((line, index) => {
     const trimmed = line.trim();
+    const isTableRow = trimmed.startsWith('|') && trimmed.endsWith('|');
 
-    // Handle empty lines (flush lists)
+    // Handle empty lines (flush lists and tables)
     if (!trimmed) {
       flushList(index);
+      if (inTable) {
+        flushTable(index);
+      }
       return;
+    }
+
+    // Table handling
+    if (isTableRow) {
+      flushList(index);
+      if (!inTable) {
+        inTable = true;
+      }
+      currentTable.push(trimmed);
+      // Check if this is the last line or next line is not a table row
+      const nextLine = index < lines.length - 1 ? lines[index + 1].trim() : '';
+      const nextIsTableRow = nextLine.startsWith('|') && nextLine.endsWith('|');
+      if (!nextIsTableRow) {
+        flushTable(index);
+      }
+      return;
+    } else if (inTable) {
+      // We were in a table but this line is not a table row, flush the table
+      flushTable(index);
     }
 
     // Horizontal Rule
@@ -111,6 +213,9 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
   });
 
   flushList(lines.length);
+  if (inTable) {
+    flushTable(lines.length);
+  }
 
   return <div className="markdown-content">{elements}</div>;
 };
