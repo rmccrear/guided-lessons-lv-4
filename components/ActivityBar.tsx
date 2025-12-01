@@ -51,7 +51,7 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({
           <button
             key={lesson.id}
             ref={isActive ? activeButtonRef : null}
-            onClick={() => onSelect(idx)}
+            onClick={() => onSelect(lesson)}
             className={`
               relative flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center transition-all duration-200
               ${isActive 
