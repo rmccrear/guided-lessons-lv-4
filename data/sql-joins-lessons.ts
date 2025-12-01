@@ -2,27 +2,38 @@ import { Lesson } from '../types';
 
 export const SQL_JOINS_RELATIONSHIPS_LESSONS: Lesson[] = [
   {
-    id: "sql-joins-relationships-concepts-one-to-many",
-    title: "Concepts: One-to-Many",
-    description: "Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase.",
+    id: "sql-joins-relationships-concept-the-relationship-model",
+    title: "Concept: The Relationship Model",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
     type: "exercise",
     content: `
-Before we code, we need to understand **Relationships** and **Keys**.
+**Goal:** Understand how data connects.
 
-### The "One-to-Many" Relationship
-Think about a Soccer Match.
+Think about a **Soccer Match**.
 1.  **One** match has **Many** goals.
 2.  A goal belongs to **One** specific match.
+3.  A match involves two teams.
 
 This is a **1:N (One-to-Many)** relationship.
+
+In our Potluck app:
+* An **Event** (like "Thanksgiving") has many **Meals**.
+* A **Meal** (like "Turkey") belongs to one **Event**.
 
 
 
 [Image of SQL one to many relationship diagram]
+`
+  },
+  {
+    id: "sql-joins-relationships-concept-primary-vs-foreign-keys",
+    title: "Concept: Primary vs. Foreign Keys",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** Understand the "Glue" that holds tables together.
 
-
-### Primary Keys (PK) vs. Foreign Keys (FK)
-How do we link them in a database? We use IDs.
+How do we link tables in a database? We use IDs.
 
 Look at this data from **SQL Zoo**:
 
@@ -37,20 +48,16 @@ Look at this data from **SQL Zoo**:
 | :--- | :--- | :--- | :--- |
 | **1001** | POL | Lewandowski | 17 |
 | **1001** | GRE | Salpingidis | 51 |
-| **1002** | RUS | Dzagoev | 15 |
 
 **Key Takeaways:**
 * **Primary Key (PK):** The \`id\` in the \`game\` table. It identifies the game uniquely.
 * **Foreign Key (FK):** The \`matchid\` in the \`goal\` table. It points back to the game.
-
-### Check Your Understanding
-If I want to find the stadium where "Lewandowski" scored, I have to look at his \`matchid\` (1001), find row 1001 in the \`game\` table, and read the stadium column.
 `
   },
   {
     id: "sql-joins-relationships-sql-zoo-the-join-operation",
     title: "SQL Zoo: The JOIN Operation",
-    description: "Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase.",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
     type: "exercise",
     content: `
 **Goal:** Practice connecting tables using standard SQL.
@@ -66,8 +73,16 @@ If I want to find the stadium where "Lewandowski" scored, I have to look at his 
 1.  Open the [SQL Zoo JOIN Operation](https://sqlzoo.net/wiki/The_JOIN_operation) tutorial.
 2.  Read the introduction about \`JOIN\` and \`ON\`.
 3.  Complete exercises 1 through 6.
+`
+  },
+  {
+    id: "sql-joins-relationships-reviewing-the-join",
+    title: "Reviewing the Join",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** Verify your understanding of the syntax.
 
-### 💡 Syntax Hint
 The standard syntax to join the tables we looked at above is:
 
 \`\`\`sql
@@ -76,49 +91,39 @@ SELECT player, stadium
     ON (game.id = goal.matchid)
 \`\`\`
 
-**Need help with Question 6?**
-"List the dates of the matches and the name of the player who scored for 'GER'."
-
-\`\`\`sql:show Me: Answer for #6
-SELECT mdate, player
-  FROM game JOIN goal ON (game.id = goal.matchid)
-  WHERE teamid = 'GER'
-\`\`\`
+The \`ON\` statement is the most important part. It tells SQL: "Match the **Primary Key** of the game to the **Foreign Key** of the goal."
 `
-    ,codeSnippets: [
-      {
-        language: "sql",
-        summary: "show Me: Answer for #6",
-        code: `
-SELECT mdate, player
-  FROM game JOIN goal ON (game.id = goal.matchid)
-  WHERE teamid = 'GER'
-`,
-        description: "Snippet for: show Me: Answer for #6"
-      }
-    ]
   },
   {
     id: "sql-joins-relationships-sql-zoo-more-joins-movies",
     title: "SQL Zoo: More JOINs (Movies)",
-    description: "Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase.",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
     type: "exercise",
     content: `
 **Goal:** Practice more complex relationships.
 
-Now we look at Movies, Actors, and Casting. This is slightly harder because an Actor can be in many movies, and a Movie has many actors (Many-to-Many), but we solve it using \`JOIN\`s all the same.
+Now we look at Movies, Actors, and Casting. This is slightly harder because an Actor can be in many movies, and a Movie has many actors (Many-to-Many).
 
 ### Instructions
-
 1.  Go to [SQL Zoo More JOIN Operations](https://sqlzoo.net/wiki/More_JOIN_operations).
 2.  Try exercises 1 through 7.
+`
+  },
+  {
+    id: "sql-joins-relationships-reviewing-movie-joins",
+    title: "Reviewing Movie JOINs",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** Check your solutions for the movie database.
+
+Did you struggle with Question 7? "List the casting list for the film 'Alien'".
+
+To get this, we had to join three tables: \`movie\` -> \`casting\` -> \`actor\`.
 
 ### 💡 Code Hints
 
-**Hint for Question 7:**
-"List the casting list for the film 'Alien'"
-
-\`\`\`sql:show Me: Answer for #7
+\`\`\`sql:Show Me: Answer for #7
 SELECT name
   FROM movie JOIN casting ON (movie.id = casting.movieid)
              JOIN actor   ON (casting.actorid = actor.id)
@@ -128,92 +133,136 @@ SELECT name
     ,codeSnippets: [
       {
         language: "sql",
-        summary: "show Me: Answer for #7",
+        summary: "Show Me: Answer for #7",
         code: `
 SELECT name
   FROM movie JOIN casting ON (movie.id = casting.movieid)
              JOIN actor   ON (casting.actorid = actor.id)
   WHERE title = 'Alien'
 `,
-        description: "Snippet for: show Me: Answer for #7"
+        description: "Snippet for: Show Me: Answer for #7"
       }
     ]
   },
   {
-    id: "sql-joins-relationships-designing-the-potluck-events",
-    title: "Designing the Potluck Events",
-    description: "Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase.",
+    id: "sql-joins-relationships-designing-the-potluck-schema",
+    title: "Designing the Potluck Schema",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
     type: "exercise",
     content: `
-**Goal:** Create a \`potluck_events\` table in Supabase and link it to meals.
+**Goal:** Apply this theory to our Potluck app.
 
-**User Story:** As a user, I want to create specific Events (like "Thanksgiving 2023") so that I can assign meals to a specific party, not just a general list.
+**User Story:** As a user, I want to create specific Events (like "Thanksgiving 2023") so that I can assign meals to a specific party.
 
-### 1\. The Relationship
+### 🧠 Critical Thinking
+We have \`potluck_meals\`. We are about to create \`potluck_events\`.
 
-We currently have \`potluck_meals\`. We need \`potluck_events\`.
+**Question:** What is the relationship between them?
+1.  Does one event have many meals?
+2.  Does one meal have many events?
 
-  * An Event has many Meals.
-  * A Meal belongs to one Event.
+\`\`\`text:Show Me: The Answer
+It is a One-to-Many relationship.
+ONE Event has MANY Meals.
+ONE Meal belongs to ONE Event.
+\`\`\`
+`
+    ,codeSnippets: [
+      {
+        language: "text",
+        summary: "Show Me: The Answer",
+        code: `
+It is a One-to-Many relationship.
+ONE Event has MANY Meals.
+ONE Meal belongs to ONE Event.
+`,
+        description: "Snippet for: Show Me: The Answer"
+      }
+    ]
+  },
+  {
+    id: "sql-joins-relationships-creating-the-events-table",
+    title: "Creating the Events Table",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** Create the table in Supabase.
 
-### 2\. Create the Table
-
-1.  Go to your **Supabase Dashboard** -\> **Table Editor**.
+### Instructions
+1.  Go to your **Supabase Dashboard** -> **Table Editor**.
 2.  Create a new table called \`potluck_events\`.
 3.  Add these columns:
-      * \`id\` (int8, Primary Key)
-      * \`name\` (text)
-      * \`date\` (date)
-      * \`location\` (text)
-4.  Insert 2 or 3 rows into this table (e.g., "Office Party", "Summer BBQ").
+    * \`id\` (int8, Primary Key)
+    * \`name\` (text) - e.g., "Office Party"
+    * \`date\` (date)
+    * \`location\` (text)
+4.  **Action:** Insert 2 or 3 rows into this table manually via the dashboard.
+`
+  },
+  {
+    id: "sql-joins-relationships-linking-meals-to-events",
+    title: "Linking Meals to Events",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** Create the Foreign Key column.
 
-### 3\. Create the Connection
+We need to tell the **Meals** which **Event** they belong to. Since a Meal belongs to an Event, the Meal table holds the key (the "Foreign Key").
 
-We need to tell the **Meals** which **Event** they belong to.
-
-**Thinking Step:** Which table gets the Foreign Key?
-
-  * Does the Event store a list of meal IDs? (No, that's messy).
-  * Does the Meal store the ID of the event it belongs to? (Yes).
-
-**Instructions:**
-
+### Instructions
 1.  Edit the \`potluck_meals\` table.
 2.  Add a new column.
-      * **Name:** \`event_id\`
-      * **Type:** \`int8\`
-      * **Foreign Key:** Click the link icon. Select \`potluck_events\` and the \`id\` column.
-3.  Manually edit your existing meals and assign them an \`event_id\` (e.g., 1, 2, or 3).
+    * **Name:** \`event_id\`
+    * **Type:** \`int8\`
+    * **Foreign Key:** Click the chain/link icon. Select \`potluck_events\` and the \`id\` column.
+3.  **Action:** Manually edit your existing meals and assign them an \`event_id\` (e.g., 1, 2, or 3).
 `
   },
   {
-    id: "sql-joins-relationships-querying-events-and-meals",
-    title: "Querying Events and Meals",
-    description: "Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase.",
+    id: "sql-joins-relationships-querying-by-id-no-join",
+    title: "Querying by ID (No JOIN)",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
     type: "exercise",
     content: `
-**Goal:** Write SQL queries to find meals based on their event.
+**Goal:** Select meals for a specific event using the ID.
 
-### Instructions
+**User Story:** As a developer, I want to fetch all meals for Event #1 quickly.
 
-Run these queries in the **Supabase SQL Editor**.
+Since the \`event_id\` is already inside the \`potluck_meals\` table, we do **not** need a JOIN for this specific question.
 
-### Task 1: No JOIN Needed
-
-Find all meals that belong to the event with ID 1.
-
-\`\`\`sql:show Me: The Query
+\`\`\`sql:Show Me: The Query
 SELECT * FROM potluck_meals 
 WHERE event_id = 1;
 \`\`\`
+`
+    ,codeSnippets: [
+      {
+        language: "sql",
+        summary: "Show Me: The Query",
+        code: `
+SELECT * FROM potluck_meals 
+WHERE event_id = 1;
+`,
+        description: "Snippet for: Show Me: The Query"
+      }
+    ]
+  },
+  {
+    id: "sql-joins-relationships-querying-by-name-join-required",
+    title: "Querying by Name (JOIN Required)",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** Select meals based on the Event's name or date.
 
-### Task 2: JOIN Required
+**User Story:** As a developer, I want to find all meals for "Summer BBQ", but the Meal table doesn't know the name "Summer BBQ", it only knows ID \`1\`.
 
-Find all meals brought to any potluck happening on a specific date (e.g., '2023-12-25'), OR find all meals for the event named "Summer BBQ".
+We must JOIN to ask questions about the Event's **name** or **date**.
 
-Because the *date* and *name* live on the Event table, but we want the *Meals*, we must JOIN.
+### Challenge
+Write a query to find all meals for the event named 'Summer BBQ'.
 
-\`\`\`sql:show Me: The JOIN Query
+\`\`\`sql:Show Me: The Solution
 SELECT potluck_meals.* FROM potluck_meals 
 JOIN potluck_events ON potluck_meals.event_id = potluck_events.id
 WHERE potluck_events.name = 'Summer BBQ';
@@ -222,92 +271,133 @@ WHERE potluck_events.name = 'Summer BBQ';
     ,codeSnippets: [
       {
         language: "sql",
-        summary: "show Me: The Query",
-        code: `
-SELECT * FROM potluck_meals 
-WHERE event_id = 1;
-`,
-        description: "Snippet for: show Me: The Query"
-      },
-      {
-        language: "sql",
-        summary: "show Me: The JOIN Query",
+        summary: "Show Me: The Solution",
         code: `
 SELECT potluck_meals.* FROM potluck_meals 
 JOIN potluck_events ON potluck_meals.event_id = potluck_events.id
 WHERE potluck_events.name = 'Summer BBQ';
 `,
-        description: "Snippet for: show Me: The JOIN Query"
+        description: "Snippet for: Show Me: The Solution"
       }
     ]
   },
   {
-    id: "sql-joins-relationships-adding-users-owners",
-    title: "Adding Users (Owners)",
-    description: "Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase.",
+    id: "sql-joins-relationships-adding-users",
+    title: "Adding Users",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
     type: "exercise",
     content: `
-**Goal:** Link data to specific Users.
+**Goal:** Enable Authentication data.
 
-**User Story:** As an app developer, I want to know **who** created the event and **who** is bringing the meal.
-
-In Supabase, users are managed in a special system table (\`auth.users\`), but we can still link to them using Foreign Keys.
+**User Story:** We need to track **who** is doing what.
 
 ### Instructions
-
-1.  **Create Users:** Go to **Authentication** in the sidebar and add 2 distinct users (User A and User B).
-2.  **Update \`potluck_events\`:**
-      * Add a column \`user_id\`.
-      * Type: \`uuid\` (Standard for Supabase Auth).
-      * Foreign Key: Link to \`auth.users\` -\> \`id\`.
-      * *Concept:* This defines who **Hosts/Owns** the Event.
-3.  **Update \`potluck_meals\`:**
-      * Add a column \`user_id\`.
-      * Type: \`uuid\`.
-      * Foreign Key: Link to \`auth.users\` -\> \`id\`.
-      * *Concept:* This defines who is **Bringing** the meal.
-
-### 💡 Visualizing the Data
-
-  * **User A** might host the "Summer BBQ".
-  * **User B** might bring "Potato Salad" to the "Summer BBQ".
+1.  Go to the **Authentication** tab in the Supabase sidebar.
+2.  Add 2 distinct users (e.g., \`user_a@test.com\` and \`user_b@test.com\`).
+3.  Copy their **User UIDs** (the long strings of characters) and save them in a notepad for the next step.
 `
   },
   {
-    id: "sql-joins-relationships-advanced-user-queries",
-    title: "Advanced User Queries",
-    description: "Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase.",
+    id: "sql-joins-relationships-designing-user-relationships",
+    title: "Designing User Relationships",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
     type: "exercise",
     content: `
-**Goal:** Select data based on User ownership.
+**Goal:** Plan the User links.
 
-### Task 1: The Host's Events (No JOIN)
+We have two relationships to model:
+1.  **The Host:** A User "owns" an Event.
+2.  **The Cook:** A User "brings" a Meal.
 
-Select all Events that are owned/hosted by a specific User UUID.
+**Question:** Which tables need a \`user_id\` column?
 
-\`\`\`sql:show Me: The Query
--- Replace UUID with one from your Auth tab
+\`\`\`text:Show Me: The Answer
+Both of them!
+1. potluck_events needs a user_id (The Host)
+2. potluck_meals needs a user_id (The Cook)
+\`\`\`
+`
+    ,codeSnippets: [
+      {
+        language: "text",
+        summary: "Show Me: The Answer",
+        code: `
+Both of them!
+1. potluck_events needs a user_id (The Host)
+2. potluck_meals needs a user_id (The Cook)
+`,
+        description: "Snippet for: Show Me: The Answer"
+      }
+    ]
+  },
+  {
+    id: "sql-joins-relationships-establishing-user-links",
+    title: "Establishing User Links",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** Add the columns in Supabase.
+
+### Instructions
+1.  **Update \`potluck_events\`:**
+    * Add column \`user_id\`.
+    * Type: \`uuid\` (Standard for Supabase Auth).
+    * Foreign Key: Link to \`auth.users\` -> \`id\`.
+2.  **Update \`potluck_meals\`:**
+    * Add column \`user_id\`.
+    * Type: \`uuid\`.
+    * Foreign Key: Link to \`auth.users\` -> \`id\`.
+3.  **Action:** Manually assign User UIDs to your existing rows in both tables.
+`
+  },
+  {
+    id: "sql-joins-relationships-user-query-owned-events",
+    title: "User Query: Owned Events",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** Select events belonging to a user.
+
+**User Story:** As a user, I want to see a list of the parties I am hosting.
+
+Do we need a JOIN? No. The \`user_id\` is right there on the event table.
+
+\`\`\`sql:Show Me: The Query
+-- Replace the ID with one from your Auth tab
 SELECT * FROM potluck_events 
 WHERE user_id = 'c02111-YOUR-UUID-GOES-HERE';
 \`\`\`
-
-### Task 2: The User's Contributions (No JOIN)
-
-Select all meals that a specific User is bringing. (Note: We don't need to know *where* they are going yet, just what they are cooking).
-
-\`\`\`sql:show Me: The Query
-SELECT * FROM potluck_meals 
+`
+    ,codeSnippets: [
+      {
+        language: "sql",
+        summary: "Show Me: The Query",
+        code: `
+-- Replace the ID with one from your Auth tab
+SELECT * FROM potluck_events 
 WHERE user_id = 'c02111-YOUR-UUID-GOES-HERE';
-\`\`\`
+`,
+        description: "Snippet for: Show Me: The Query"
+      }
+    ]
+  },
+  {
+    id: "sql-joins-relationships-user-query-hosting-dashboard",
+    title: "User Query: Hosting Dashboard",
+    description: "Master Foreign Keys and JOINs by building a complete event management schema.",
+    type: "exercise",
+    content: `
+**Goal:** The Complex Join.
 
-### Task 3: The Complex Question (JOIN Required)
+**User Story:** As User A (The Host), I want to see **every meal** coming to **any of my parties**.
 
-**Scenario:** User A is hosting a party. They want to see a list of **all meals** being brought to their party, regardless of who is bringing them.
+* I am NOT the cook (so I can't check \`potluck_meals.user_id\`).
+* I am the HOST (so I must check \`potluck_events.user_id\`).
+* I need the food info (so I must SELECT from \`potluck_meals\`).
 
-  * We need \`potluck_meals\` (the food).
-  * We need \`potluck_events\` (to check if User A owns the event).
+This requires a JOIN.
 
-\`\`\`sql:show Me: The Host's Menu Query
+\`\`\`sql:Show Me: The Host Query
 SELECT potluck_meals.meal_name, potluck_meals.guest_name
 FROM potluck_meals
 JOIN potluck_events ON potluck_meals.event_id = potluck_events.id
@@ -317,46 +407,15 @@ WHERE potluck_events.user_id = 'c02111-HOST-UUID-HERE';
     ,codeSnippets: [
       {
         language: "sql",
-        summary: "show Me: The Query",
-        code: `
--- Replace UUID with one from your Auth tab
-SELECT * FROM potluck_events 
-WHERE user_id = 'c02111-YOUR-UUID-GOES-HERE';
-`,
-        description: "Snippet for: show Me: The Query"
-      },
-      {
-        language: "sql",
-        summary: "show Me: The Query",
-        code: `
-SELECT * FROM potluck_meals 
-WHERE user_id = 'c02111-YOUR-UUID-GOES-HERE';
-`,
-        description: "Snippet for: show Me: The Query"
-      },
-      {
-        language: "sql",
-        summary: "show Me: The Host's Menu Query",
+        summary: "Show Me: The Host Query",
         code: `
 SELECT potluck_meals.meal_name, potluck_meals.guest_name
 FROM potluck_meals
 JOIN potluck_events ON potluck_meals.event_id = potluck_events.id
 WHERE potluck_events.user_id = 'c02111-HOST-UUID-HERE';
 `,
-        description: "Snippet for: show Me: The Host's Menu Query"
+        description: "Snippet for: Show Me: The Host Query"
       }
     ]
-  },
-  {
-    id: "sql-joins-relationships--check",
-    title: "✅ Check",
-    description: "Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase.",
-    type: "exercise",
-    content: `
-1.  You have completed the SQL Zoo JOIN tutorials.
-2.  Your Dashboard has a \`potluck_events\` table.
-3.  \`potluck_meals\` has an \`event_id\` column (FK) and \`user_id\` column (FK).
-4.  You can run a query to see all food arriving at a specific user's party.
-`
   }
 ];

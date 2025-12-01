@@ -14,7 +14,7 @@ export const CHAPTERS: Chapter[] = [
     id: 'sql-joins',
     slug: 'sql-joins',
     title: 'SQL Joins',
-    description: 'Learn how to connect tables using Foreign Keys and JOINs in SQL Zoo and Supabase',
+    description: 'Master Foreign Keys and JOINs by building a complete event management schema',
     lessons: SQL_JOINS_RELATIONSHIPS_LESSONS
   }
 ];
