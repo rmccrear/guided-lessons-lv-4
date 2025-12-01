@@ -25,14 +25,15 @@ export function Course({ chapters, onOpenChapter }: CourseProps) {
         </div>
         <nav className="flex-1 overflow-y-auto p-2 space-y-1">
           {list.map((c) => (
-            <a
+            <button
               key={c.id}
-              href={`#${c.slug}`}
-              className="block px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
+              type="button"
+              className="block w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
               title={c.title}
+              onClick={() => onOpenChapter?.(c)}
             >
               {c.title}
-            </a>
+            </button>
           ))}
         </nav>
       </aside>
