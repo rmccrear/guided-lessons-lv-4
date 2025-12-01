@@ -6,7 +6,7 @@ interface SidebarProps {
   lessons: Lesson[];
   currentIndex: number;
   status: Record<string, LessonStatus>;
-  onSelect: (index: number) => void;
+  onSelect: (lesson: Lesson) => void;
   progress: number;
 }
 
@@ -48,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             return (
               <li key={lesson.id} className="mb-1">
                 <button
-                  onClick={() => onSelect(index)}
+                  onClick={() => onSelect(lesson)}
                   className={`w-full text-left px-6 py-3 flex items-start gap-3 transition-colors ${
                     isActive
                       ? 'bg-gray-800 text-white border-r-4 border-emerald-500'

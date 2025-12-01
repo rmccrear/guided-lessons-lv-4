@@ -6,7 +6,7 @@ interface ActivityBarProps {
   lessons: Lesson[];
   currentIndex: number;
   status: Record<string, LessonStatus>;
-  onSelect: (index: number) => void;
+  onSelect: (lesson: Lesson) => void;
 }
 
 export const ActivityBar: React.FC<ActivityBarProps> = ({

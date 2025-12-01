@@ -3,8 +3,7 @@ import { Sidebar } from './components/Sidebar';
 import { LessonView } from './components/LessonView';
 import { AITutor } from './components/AITutor';
 import { ActivityBar } from './components/ActivityBar';
-import { Lesson, LessonStatus } from './types';
-import { LESSONS } from './constants';
+import { Lesson, LessonStatus, Chapter } from './types';
 import { Menu, X, GraduationCap, MessageSquareText, LayoutGrid } from 'lucide-react';
 import Course from './components/Course';
 import { CHAPTERS } from './data/chapters-constants';
@@ -13,16 +12,23 @@ import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-do
 function LessonShell() {
   const navigate = useNavigate();
   const params = useParams<{ chapterSlug: string; lessonId: string }>();
-  const [currentLessonIndex, setCurrentLessonIndex] = useState<number>(0);
   const [lessonStatus, setLessonStatus] = useState<Record<string, LessonStatus>>({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isTutorOpen, setIsTutorOpen] = useState(false);
 
-  const indexById = useMemo(() => {
-    const map: Record<string, number> = {};
-    LESSONS.forEach((l, i) => (map[l.id] = i));
-    return map;
-  }, []);
+  // Find the current chapter based on URL
+  const currentChapter = useMemo(() => {
+    return CHAPTERS.find(ch => ch.slug === params.chapterSlug) || CHAPTERS[0];
+  }, [params.chapterSlug]);
+
+  // Find the current lesson within the chapter
+  const currentLesson = useMemo(() => {
+    return currentChapter.lessons.find(l => l.id === params.lessonId) || currentChapter.lessons[0];
+  }, [currentChapter, params.lessonId]);
+
+  const currentLessonIndex = useMemo(() => {
+    return currentChapter.lessons.findIndex(l => l.id === currentLesson.id);
+  }, [currentChapter, currentLesson]);
 
   const chapterByLessonId = useMemo(() => {
     const map: Record<string, string> = {};
@@ -33,32 +39,20 @@ function LessonShell() {
   // Initialize status on load
   useEffect(() => {
     const initialStatus: Record<string, LessonStatus> = {};
-    LESSONS.forEach((lesson) => {
-      initialStatus[lesson.id] = { completed: false };
+    CHAPTERS.forEach((chapter) => {
+      chapter.lessons.forEach((lesson) => {
+        initialStatus[lesson.id] = { completed: false };
+      });
     });
     setLessonStatus(initialStatus);
   }, []);
 
-  // Sync lesson index from params
-  useEffect(() => {
-    const lessonId = params.lessonId;
-    if (lessonId) {
-      const idx = indexById[lessonId];
-      if (typeof idx === 'number') setCurrentLessonIndex(idx);
-      else setCurrentLessonIndex(0);
-    }
-  }, [params.lessonId, indexById]);
-
-  const handleLessonSelect = (index: number) => {
-    setCurrentLessonIndex(index);
+  const handleLessonSelect = (lesson: Lesson) => {
+    const chapterSlug = chapterByLessonId[lesson.id] || currentChapter.slug;
+    navigate(`/${chapterSlug}/${lesson.id}`);
     // On mobile, close sidebar after selection
     if (window.innerWidth < 768) {
       setIsSidebarOpen(false);
-    }
-    const target = LESSONS[index];
-    if (target?.id) {
-      const chapterSlug = chapterByLessonId[target.id] || 'sql-intro';
-      navigate(`/${chapterSlug}/${target.id}`);
     }
   };
 
@@ -70,27 +64,30 @@ function LessonShell() {
   };
 
   const handleNext = () => {
-    if (currentLessonIndex < LESSONS.length - 1) {
-      handleLessonSelect(currentLessonIndex + 1);
+    const nextIndex = currentLessonIndex + 1;
+    if (nextIndex < currentChapter.lessons.length) {
+      handleLessonSelect(currentChapter.lessons[nextIndex]);
     }
   };
 
   const handlePrev = () => {
-    if (currentLessonIndex > 0) {
-      handleLessonSelect(currentLessonIndex - 1);
+    const prevIndex = currentLessonIndex - 1;
+    if (prevIndex >= 0) {
+      handleLessonSelect(currentChapter.lessons[prevIndex]);
     }
   };
 
   const openCourse = () => navigate('/');
 
-  const handleOpenChapter = (chapter: { slug: string; lessons?: Lesson[] }) => {
+  const handleOpenChapter = (chapter: Chapter) => {
     const first = chapter.lessons?.[0];
     if (first?.id) navigate(`/${chapter.slug}/${first.id}`);
   };
 
-  const currentLesson = LESSONS[currentLessonIndex];
+  const allLessons = useMemo(() => CHAPTERS.flatMap(ch => ch.lessons), []);
+  
   const progress = Math.round(
-    (Object.values(lessonStatus).filter((s: LessonStatus) => s.completed).length / LESSONS.length) * 100
+    (Object.values(lessonStatus).filter((s: LessonStatus) => s.completed).length / allLessons.length) * 100
   );
 
   return (
@@ -110,7 +107,7 @@ function LessonShell() {
         }`}
       >
         <Sidebar
-          lessons={LESSONS}
+          lessons={currentChapter.lessons}
           currentIndex={currentLessonIndex}
           status={lessonStatus}
           onSelect={handleLessonSelect}
@@ -160,7 +157,7 @@ function LessonShell() {
 
         {/* Activity Bar */}
         <ActivityBar 
-          lessons={LESSONS}
+          lessons={currentChapter.lessons}
           currentIndex={currentLessonIndex}
           status={lessonStatus}
           onSelect={handleLessonSelect}
@@ -176,7 +173,7 @@ function LessonShell() {
               onNext={handleNext}
               onPrev={handlePrev}
               hasPrev={currentLessonIndex > 0}
-              hasNext={currentLessonIndex < LESSONS.length - 1}
+              hasNext={currentLessonIndex < currentChapter.lessons.length - 1}
             />
           </div>
         </main>
