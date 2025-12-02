@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Chapter } from '../types';
 import { CHAPTERS } from '../data/chapters-constants';
 import ChapterCard from './ChapterCard';
-import { Menu } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useAllChapters } from '../utils/useAllChapters';
 
 export interface CourseProps {
@@ -16,11 +16,12 @@ export interface CourseProps {
 export function Course({ chapters, onOpenChapter }: CourseProps) {
   const rawList = useMemo(() => chapters ?? CHAPTERS, [chapters]);
   const { chapters: list, loading } = useAllChapters(rawList);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
-      {/* Sidebar / Nav */}
-      <aside className="w-64 shrink-0 border-r border-gray-700 bg-gray-800 hidden md:flex md:flex-col">
+      {/* Sidebar / Nav (rollback: always visible, no mobile toggle) */}
+      <aside className={"w-64 shrink-0 border-r border-gray-700 bg-gray-800 flex flex-col md:relative"}>
         <div className="h-14 border-b border-gray-700 flex items-center gap-2 px-4">
           <Menu size={18} className="text-gray-300" />
           <span className="font-semibold tracking-tight">Chapters</span>
@@ -32,7 +33,10 @@ export function Course({ chapters, onOpenChapter }: CourseProps) {
               type="button"
               className="block w-full text-left px-3 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-700 hover:text-white"
               title={c.title}
-              onClick={() => onOpenChapter?.(c)}
+              onClick={() => {
+                onOpenChapter?.(c);
+                setIsSidebarOpen(false);
+              }}
             >
               {c.title}
             </button>
@@ -42,8 +46,10 @@ export function Course({ chapters, onOpenChapter }: CourseProps) {
 
       {/* Main */}
       <main className="flex-1 overflow-y-auto">
+        {/* Rollback: remove mobile header/hamburger; keep static header below */}
+
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-10">
-          <header className="mb-6 md:mb-8">
+          <header className="mb-6 md:mb-8 hidden md:block">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-emerald-400">Course Overview</h1>
             <p className="text-sm md:text-base text-gray-300 mt-1">Browse chapters and jump into lessons.</p>
           </header>

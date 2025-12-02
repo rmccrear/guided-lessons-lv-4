@@ -26,10 +26,12 @@ function LessonShell() {
 
   // Find the current lesson within the chapter
   const currentLesson = useMemo(() => {
+    if (currentChapter.lessons.length === 0) return null;
     return currentChapter.lessons.find(l => l.id === params.lessonId) || currentChapter.lessons[0];
   }, [currentChapter, params.lessonId]);
 
   const currentLessonIndex = useMemo(() => {
+    if (!currentLesson) return -1;
     return currentChapter.lessons.findIndex(l => l.id === currentLesson.id);
   }, [currentChapter, currentLesson]);
 
@@ -94,8 +96,9 @@ function LessonShell() {
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden font-sans">
       {/* Mobile Sidebar Overlay */}
+      {/* Overlay only for mobile; desktop remains unaffected */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-20 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -103,8 +106,8 @@ function LessonShell() {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-30 w-72 bg-gray-800 border-r border-gray-700 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-30 w-72 bg-gray-800 border-r border-gray-700 transform transition-transform duration-300 ease-in-out md:relative ${
+          isSidebarOpen ? 'translate-x-0 md:translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <Sidebar
@@ -121,12 +124,7 @@ function LessonShell() {
         {/* Header */}
         <header className="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4 shadow-sm z-10 shrink-0">
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg md:hidden"
-            >
-              {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+            {/* Remove hamburger toggle for rollback; keep static title */}
             <div className="flex items-center gap-2 text-emerald-400">
               <GraduationCap size={24} />
               <h1 className="text-xl font-bold tracking-tight">Learn SQL</h1>
@@ -167,15 +165,21 @@ function LessonShell() {
         {/* Lesson View Area */}
         <main className="flex-1 overflow-y-auto bg-gray-900 scroll-smooth relative">
           <div className="max-w-4xl mx-auto p-4 md:p-8 pb-24">
-            <LessonView
-              lesson={currentLesson}
-              isCompleted={lessonStatus[currentLesson.id]?.completed || false}
-              onToggleComplete={(completed) => markComplete(currentLesson.id, completed)}
-              onNext={handleNext}
-              onPrev={handlePrev}
-              hasPrev={currentLessonIndex > 0}
-              hasNext={currentLessonIndex < currentChapter.lessons.length - 1}
-            />
+            {currentLesson ? (
+              <LessonView
+                lesson={currentLesson}
+                isCompleted={lessonStatus[currentLesson.id]?.completed || false}
+                onToggleComplete={(completed) => markComplete(currentLesson.id, completed)}
+                onNext={handleNext}
+                onPrev={handlePrev}
+                hasPrev={currentLessonIndex > 0}
+                hasNext={currentLessonIndex < currentChapter.lessons.length - 1}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-64">
+                <div className="text-gray-400 text-lg">Loading lessons...</div>
+              </div>
+            )}
           </div>
         </main>
       </div>
