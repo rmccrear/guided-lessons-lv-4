@@ -18,5 +18,13 @@ export const CHAPTERS: Chapter[] = [
     // Load from markdown dynamically instead of pre-compiled lessons
     lessons: [],
     markdownPath: '/data/sql-join-lesson.md'
+  },
+  {
+    id: 'express-rest-server-in-memory',
+    slug: 'express-rest-server-in-memory',
+    title: 'Express REST Server (In Memory)',
+    description: 'Build a complete REST API with Express, from setup to in-memory data management',
+    lessons: [],
+    markdownPath: '/data/express-rest-server-in-memory.md'
   }
 ];
