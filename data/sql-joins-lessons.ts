@@ -16,6 +16,8 @@ Think about a **Soccer Match**.
 
 This is a **1:N (One-to-Many)** relationship.
 
+![An educational diagram illustrating a "One-to-Many" (1:N) database relationship. The graphic is split into two visual metaphors. The top section shows a "Soccer Match" entity on the left connected to multiple "Goal" entities on the right. The bottom section shows a single "Event" entity on the left connected to multiple "Meal" entities on the right. In the center, a standard database connector line is drawn: it has a single vertical hash mark on the left (indicating "One") and a branching crow's foot symbol on the right (indicating "Many").](/assets/sql-join/One-to-Many-Relationship.png)
+
 In our Potluck app:
 * An **Event** (like "Thanksgiving") has many **Meals**.
 * A **Meal** (like "Turkey") belongs to one **Event**.

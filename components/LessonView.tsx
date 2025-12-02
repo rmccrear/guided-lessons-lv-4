@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Lesson, CodeSnippet } from '../types';
 import { ExternalLink, ChevronRight, ChevronLeft, CheckSquare, Square, Lightbulb, Eye, ChevronDown, ChevronUp, Code2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface LessonViewProps {
   lesson: Lesson;
@@ -13,211 +15,68 @@ interface LessonViewProps {
 }
 
 const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
-  const lines = content.split('\n');
-  const elements: React.ReactNode[] = [];
-  let currentList: React.ReactNode[] = [];
-  let currentTable: string[] = [];
-  let inTable = false;
-
-  const flushList = (keyPrefix: number) => {
-    if (currentList.length > 0) {
-      elements.push(
-        <ul key={`list-${keyPrefix}`} className="list-disc pl-6 space-y-2 mb-6 text-gray-300">
-          {[...currentList]}
-        </ul>
-      );
-      currentList = [];
-    }
-  };
-
-  const flushTable = (keyPrefix: number) => {
-    if (currentTable.length === 0) return;
-    
-    // Parse table rows
-    const rows: string[][] = [];
-    let headerRow: string[] = [];
-    let alignments: string[] = [];
-    
-    currentTable.forEach((row, idx) => {
-      // Split by | and filter out empty strings, but keep track of all positions
-      const cells = row.split('|').map(c => c.trim());
-      // Remove first and last if they're empty (from leading/trailing |)
-      const cleanCells = cells.filter((c, i) => !(i === 0 && c === '') && !(i === cells.length - 1 && c === ''));
-      
-      if (idx === 0) {
-        headerRow = cleanCells;
-      } else if (idx === 1) {
-        // This is the separator row, extract alignments
-        alignments = cleanCells.map(cell => {
-          if (cell.startsWith(':') && cell.endsWith(':')) return 'center';
-          if (cell.endsWith(':')) return 'right';
-          return 'left';
-        });
-        // Ensure we have alignments for all headers
-        while (alignments.length < headerRow.length) {
-          alignments.push('left');
-        }
-      } else {
-        rows.push(cleanCells);
-      }
-    });
-    
-    if (headerRow.length > 0) {
-      elements.push(
-        <div key={`table-${keyPrefix}`} className="my-6 overflow-x-auto">
-          <table className="min-w-full border-collapse border border-gray-700 bg-gray-800/50">
-            <thead>
-              <tr>
-                {headerRow.map((header, idx) => (
-                  <th
-                    key={idx}
-                    className={`border border-gray-700 px-4 py-3 text-left font-semibold text-white bg-gray-900/50 ${
-                      alignments[idx] === 'center' ? 'text-center' : 
-                      alignments[idx] === 'right' ? 'text-right' : 'text-left'
-                    }`}
-                  >
-                    {parseInline(header)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, rowIdx) => (
-                <tr key={rowIdx} className="hover:bg-gray-800/30">
-                  {headerRow.map((_, cellIdx) => (
-                    <td
-                      key={cellIdx}
-                      className={`border border-gray-700 px-4 py-3 text-gray-300 ${
-                        alignments[cellIdx] === 'center' ? 'text-center' : 
-                        alignments[cellIdx] === 'right' ? 'text-right' : 'text-left'
-                      }`}
-                    >
-                      {parseInline(row[cellIdx] || '')}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      );
-    }
-    
-    currentTable = [];
-    inTable = false;
-  };
-
-  const parseInline = (text: string) => {
-    // Split by Markdown tokens: **bold**, `code`, [link](url)
-    const parts = text.split(/(\*\*.*?\*\*|`.*?`|\[.*?\]\(.*?\))/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} className="text-white font-bold">{part.slice(2, -2)}</strong>;
-      }
-      if (part.startsWith('`') && part.endsWith('`')) {
-        return (
-          <code key={i} className="bg-gray-800 px-1.5 py-0.5 rounded text-indigo-300 font-mono text-sm border border-gray-700">
-            {part.slice(1, -1)}
-          </code>
-        );
-      }
-      if (part.startsWith('[') && part.includes('](') && part.endsWith(')')) {
-        const match = part.match(/\[(.*?)\]\((.*?)\)/);
-        if (match) {
-          return (
-            <a 
-              key={i} 
-              href={match[2]} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-emerald-400 hover:text-emerald-300 hover:underline decoration-emerald-500/50"
-            >
-              {match[1]}
-            </a>
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        // Custom styling for markdown elements
+        h1: ({ node, ...props }) => <h1 className="text-3xl md:text-4xl font-bold text-white mt-10 mb-6" {...props} />,
+        h2: ({ node, ...props }) => <h2 className="text-2xl font-bold text-white mt-8 mb-4 flex items-center gap-2" {...props} />,
+        h3: ({ node, ...props }) => <h3 className="text-xl font-semibold text-indigo-300 mt-6 mb-3" {...props} />,
+        h4: ({ node, ...props }) => <h4 className="text-lg font-semibold text-white mt-4 mb-2" {...props} />,
+        p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-gray-300 text-lg" {...props} />,
+        ul: ({ node, ...props }) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-300" {...props} />,
+        ol: ({ node, ...props }) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-300" {...props} />,
+        li: ({ node, ...props }) => <li className="leading-relaxed" {...props} />,
+        a: ({ node, ...props }) => (
+          <a
+            className="text-emerald-400 hover:text-emerald-300 hover:underline decoration-emerald-500/50"
+            target="_blank"
+            rel="noopener noreferrer"
+            {...props}
+          />
+        ),
+        code: ({ node, className, children, ...props }: any) => {
+          const inline = !className;
+          return inline ? (
+            <code className="bg-gray-800 px-1.5 py-0.5 rounded text-indigo-300 font-mono text-sm border border-gray-700" {...props}>
+              {children}
+            </code>
+          ) : (
+            <code className="block bg-gray-900 p-4 rounded-lg text-emerald-300 font-mono text-sm overflow-x-auto" {...props}>
+              {children}
+            </code>
           );
-        }
-      }
-      return part;
-    });
-  };
-
-  lines.forEach((line, index) => {
-    const trimmed = line.trim();
-    const isTableRow = trimmed.startsWith('|') && trimmed.endsWith('|');
-
-    // Handle empty lines (flush lists and tables)
-    if (!trimmed) {
-      flushList(index);
-      if (inTable) {
-        flushTable(index);
-      }
-      return;
-    }
-
-    // Table handling
-    if (isTableRow) {
-      flushList(index);
-      if (!inTable) {
-        inTable = true;
-      }
-      currentTable.push(trimmed);
-      // Check if this is the last line or next line is not a table row
-      const nextLine = index < lines.length - 1 ? lines[index + 1].trim() : '';
-      const nextIsTableRow = nextLine.startsWith('|') && nextLine.endsWith('|');
-      if (!nextIsTableRow) {
-        flushTable(index);
-      }
-      return;
-    } else if (inTable) {
-      // We were in a table but this line is not a table row, flush the table
-      flushTable(index);
-    }
-
-    // Horizontal Rule
-    if (trimmed === '---' || trimmed === '***') {
-      flushList(index);
-      elements.push(<hr key={index} className="my-8 border-gray-700" />);
-    }
-    // Headers
-    else if (line.startsWith('# ')) {
-      flushList(index);
-      elements.push(<h1 key={index} className="text-3xl md:text-4xl font-bold text-white mt-10 mb-6">{parseInline(line.slice(2))}</h1>);
-    } else if (line.startsWith('## ')) {
-      flushList(index);
-      elements.push(<h2 key={index} className="text-2xl font-bold text-white mt-8 mb-4 flex items-center gap-2">{parseInline(line.slice(3))}</h2>);
-    } else if (line.startsWith('### ')) {
-      flushList(index);
-      elements.push(<h3 key={index} className="text-xl font-semibold text-indigo-300 mt-6 mb-3">{parseInline(line.slice(4))}</h3>);
-    } else if (line.startsWith('#### ')) {
-      flushList(index);
-      elements.push(<h4 key={index} className="text-lg font-semibold text-white mt-4 mb-2">{parseInline(line.slice(5))}</h4>);
-    }
-    // List Items
-    else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-      const content = trimmed.slice(2);
-      currentList.push(<li key={`li-${index}`} className="leading-relaxed">{parseInline(content)}</li>);
-    }
-    // Numbered Lists (Basic support)
-    else if (/^\d+\.\s/.test(trimmed)) {
-       // Treating numbered lists as standard lists for simplicity in this custom parser, 
-       // or we could track state for <ol>. For now, rendering as text with indentation is often safest without full state.
-       // Let's implement basic handling by flushing UL and just adding a block.
-       flushList(index);
-       elements.push(<div key={index} className="mb-2 ml-4 leading-relaxed text-gray-300">{parseInline(trimmed)}</div>);
-    }
-    // Paragraphs
-    else {
-      flushList(index);
-      elements.push(<p key={index} className="mb-4 leading-relaxed text-gray-300 text-lg">{parseInline(line)}</p>);
-    }
-  });
-
-  flushList(lines.length);
-  if (inTable) {
-    flushTable(lines.length);
-  }
-
-  return <div className="markdown-content">{elements}</div>;
+        },
+        pre: ({ node, ...props }) => <pre className="bg-gray-900 rounded-lg overflow-x-auto my-4" {...props} />,
+        blockquote: ({ node, ...props }) => (
+          <blockquote className="border-l-4 border-indigo-500 pl-4 italic text-gray-400 my-4" {...props} />
+        ),
+        hr: ({ node, ...props }) => <hr className="my-8 border-gray-700" {...props} />,
+        strong: ({ node, ...props }) => <strong className="text-white font-bold" {...props} />,
+        em: ({ node, ...props }) => <em className="italic text-gray-300" {...props} />,
+        img: ({ node, ...props }) => (
+          <img className="max-w-full h-auto rounded-lg my-6 border border-gray-700" {...props} />
+        ),
+        table: ({ node, ...props }) => (
+          <div className="my-6 overflow-x-auto">
+            <table className="min-w-full border-collapse border border-gray-700 bg-gray-800/50" {...props} />
+          </div>
+        ),
+        thead: ({ node, ...props }) => <thead {...props} />,
+        tbody: ({ node, ...props }) => <tbody {...props} />,
+        tr: ({ node, ...props }) => <tr className="hover:bg-gray-800/30" {...props} />,
+        th: ({ node, ...props }) => (
+          <th className="border border-gray-700 px-4 py-3 text-left font-semibold text-white bg-gray-900/50" {...props} />
+        ),
+        td: ({ node, ...props }) => (
+          <td className="border border-gray-700 px-4 py-3 text-gray-300" {...props} />
+        ),
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
 };
 
 const CodeSnippetItem: React.FC<{ snippet: CodeSnippet }> = ({ snippet }) => {
