@@ -210,6 +210,8 @@ ONE Meal belongs to ONE Event.
 
 We need to tell the **Meals** which **Event** they belong to. Since a Meal belongs to an Event, the Meal table holds the key (the "Foreign Key").
 
+![A database schema diagram showing the One-to-Many relationship between two tables: potluck_events and potluck_meals. The potluck_events table is shown as the parent table with a primary key id. The potluck_meals table is shown as the child table with a new column highlighted as event_id. A line connects potluck_meals.event_id to potluck_events.id, visually representing the Foreign Key link that assigns specific meals to specific events.](/assets/sql-join/supabase-potluck-foreign-key-schema.png)
+
 ### Instructions
 1.  Edit the `potluck_meals` table.
 2.  Add a new column.
@@ -238,6 +240,8 @@ WHERE event_id = 1;
 **User Story:** As a developer, I want to find all meals for "Summer BBQ", but the Meal table doesn't know the name "Summer BBQ", it only knows ID `1`.
 
 We must JOIN to ask questions about the Event's **name** or **date**.
+
+![A conceptual SQL diagram illustrating a query filtering by name. On the left, the potluck_events table shows a row with id: 1 and name: 'Summer BBQ'. On the right, the potluck_meals table shows rows with event_id: 1. A directional flow indicates the logic: the query finds 'Summer BBQ' in the first table, grabs the ID (1), and uses that connection to retrieve the matching meals from the second table.](/assets/sql-join/sql-join-filtering-by-event-name.png)
 
 ### Challenge
 Write a query to find all meals for the event named 'Summer BBQ'.
