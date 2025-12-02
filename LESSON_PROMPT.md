@@ -23,6 +23,12 @@ description: A brief summary of the lesson.
 ---
 ```
 
+**Lesson Types:**
+- **reading**: Informational content, concepts, theory (renders with Info icon)
+- **exercise**: Hands-on practice, guided implementation (standard circular indicator)
+- **challenge**: Advanced problems, stretch goals (renders with Zap/thunderbolt icon)
+- **setup**: Installation, configuration, environment prep (renders with Info icon)
+
 ### B. Hierarchy (Crucial)
 
 The parser uses Header levels to determine structure. You must follow this strictly:
@@ -33,6 +39,13 @@ The parser uses Header levels to determine structure. You must follow this stric
   * **H4 (`####`)**: Used for subsections.
 
 > **WARNING:** Never use H2 (`##`) for a sub-heading. If you use `##`, the parser splits the lesson there.
+
+**Challenge Detection:** If any H2 header contains the word "Challenge" (case-insensitive), that lesson will automatically be marked as type `challenge` and render with a Zap icon, regardless of the frontmatter type.
+
+**Important:** All challenge levels MUST include the word "Challenge" in their H2 title to trigger automatic detection. For example:
+- `## Bonus Challenge ⚡`
+- `## Challenge: Build the Query`
+- `## Advanced Challenge`
 
 ### C. Code Snippets (The "Show Me" Logic)
 
@@ -54,11 +67,24 @@ Use a **colon (`:`)** separator immediately after the language to define the "Sh
 
 \<pre\>
 
-```javascript:show Me: The Solution
+```javascript:Show Me: The Solution
 console.log(&quot;I am hidden behind a button&quot;);
 ```
 
 \</pre\>
+
+**3. Hidden Images (Collapsible Visuals)**
+Use a special alt text pattern with a colon separator to create collapsible images with "Show Me" buttons.
+
+\<pre\>
+
+![Diagram description:Show Me: The Database Schema](path/to/image.png)
+
+\</pre\>
+
+The format is: `![alt-text:Show Me: button-label](image-url)`
+- The text before the colon becomes the image alt text
+- The text after "Show Me:" becomes the button label
 
 -----
 
@@ -101,7 +127,12 @@ Need help?
 for(let i=0; i<10; i++) {
   console.log(i);
 }
-````
+```
+
+### 🖼️ Visual Aid
+Still confused? Check out this diagram:
+
+![Entity Relationship Diagram:Show Me: The ERD](assets/erd-example.png)`
 
 ## Level 2 Title
 
@@ -123,12 +154,25 @@ for(let i=0; i<10; i++) {
 * **Instructions**: Numbered lists for sequential steps.
 * **Diving Deeper**: Optional sections for "Why this works" or "Under the hood" explanations.
 * **Check**: A checklist at the end of a level to verify the student's work.
+* **Visual Aids**: Use the collapsible image syntax for diagrams, ERDs, or visual examples that students can reveal when needed.
+* **Code Hints**: Use the "Show Me:" pattern for code that should be hidden behind a reveal button.
 
 ---
 
 ## 4. Examples of Special Level Types
 
 ### The "Challenge" Level
+
+Challenge levels are perfect for:
+- Stretch goals and advanced problems
+- Independent practice without step-by-step guidance
+- Creative problem-solving opportunities
+- Bonus content for fast learners
+
+**Automatic Detection:** Any H2 header containing "Challenge" will be marked as a challenge type.
+
+**Required:** Challenge H2 titles MUST include the word "Challenge" for automatic detection.
+
 ```markdown
 ## Bonus Challenge ⚡
 
@@ -137,12 +181,38 @@ for(let i=0; i<10; i++) {
 ### The Task
 Take the function you wrote in the previous step and convert it to a one-line arrow function.
 
+**Success Criteria:**
+- Function takes two parameters
+- Returns the sum in a single line
+- No explicit `return` keyword
+
 ### 💡 Hints
 ```javascript:Show Me: The One-Liner
 const add = (a, b) => a + b;
-````
+```
+
+### 🖼️ Bonus Visual
+Want to see how it looks?
+
+![Arrow Function Diagram:Show Me: Visual Comparison](assets/arrow-functions.png)`
 
 ````
+
+**Image Alt Text Example:**
+
+When using images, provide detailed alt text descriptions to help recreate or understand the visual. This improves accessibility and helps AI assistants generate similar diagrams:
+
+```markdown
+![A diagram illustrating the relationship between two database tables. The top table, labeled "game" (Parent), highlights the 'id' column as the Primary Key (PK) with the value 1001. A connector line draws a path from this ID down to the bottom table, labeled "goal" (Child). The line connects to the 'matchid' column, labeled as the Foreign Key (FK), showing that the value 1001 appears in multiple rows to link the goals back to the specific game.:Show Me: Primary vs Foreign Keys](assets/sql-join/primary-vs-foreign-keys-database-glue.png)
+```
+
+**Challenge Best Practices:**
+- **Always include "Challenge" in the H2 title** to trigger automatic type detection
+- State the problem clearly but don't provide step-by-step instructions
+- Include success criteria or acceptance tests
+- Provide hints behind "Show Me" buttons rather than inline
+- Use encouraging language ("Can you...", "Try to...", "See if you can...")
+- Consider adding a visual diagram to clarify complex requirements
 
 ### The "Completion" Level
 ```markdown
@@ -171,11 +241,17 @@ Try adding a blue background to the widget on your own!
 
 ---
 
-## Lesson Types & Visuals
+## Lesson Types & Visual Indicators
 
-- **Info/Reading/Setup**: Renders with an `Info` (i) icon in the navigation.
-- **Challenge**: Renders with a `Zap` (thunderbolt) icon.
-- **Exercise**: Standard circular indicator.
+The lesson type determines how it appears in the navigation sidebar:
+
+- **reading** or **setup**: Renders with an `Info` (ℹ️) icon - for conceptual content and configuration
+- **challenge**: Renders with a `Zap` (⚡) icon - for advanced problems and stretch goals
+- **exercise**: Renders with a standard circular indicator - for hands-on practice
+
+**Type Detection:**
+- The `type` field in frontmatter sets the default lesson type
+- If an H2 header contains "Challenge", it automatically becomes type `challenge` regardless of frontmatter
 
 ## Special Content Sections
 
