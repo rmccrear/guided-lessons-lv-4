@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lesson, CodeSnippet } from '../types';
-import { ExternalLink, ChevronRight, ChevronLeft, CheckSquare, Square, Lightbulb, Eye, ChevronDown, ChevronUp, Code2 } from 'lucide-react';
+import { ExternalLink, ChevronRight, ChevronLeft, CheckSquare, Square, Lightbulb, Eye, ChevronDown, ChevronUp, Code2, Image } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -55,9 +55,31 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
         hr: ({ node, ...props }) => <hr className="my-8 border-gray-700" {...props} />,
         strong: ({ node, ...props }) => <strong className="text-white font-bold" {...props} />,
         em: ({ node, ...props }) => <em className="italic text-gray-300" {...props} />,
-        img: ({ node, ...props }) => (
-          <img className="max-w-full h-auto rounded-lg my-6 border border-gray-700" {...props} />
-        ),
+        img: ({ node, alt, src, ...props }: any) => {
+          // Check for "Show Me" pattern in alt text
+          const showMeMatch = alt?.match(/^(.+?):Show Me:(.+)$/);
+          
+          if (showMeMatch) {
+            const [, imageAlt, summary] = showMeMatch;
+            return (
+              <CollapsibleImageItem
+                src={src || ''}
+                alt={imageAlt.trim()}
+                summary={summary.trim()}
+              />
+            );
+          }
+          
+          // Regular image
+          return (
+            <img 
+              className="max-w-full h-auto rounded-lg my-6 border border-gray-700" 
+              alt={alt}
+              src={src}
+              {...props} 
+            />
+          );
+        },
         table: ({ node, ...props }) => (
           <div className="my-6 overflow-x-auto">
             <table className="min-w-full border-collapse border border-gray-700 bg-gray-800/50" {...props} />
@@ -131,6 +153,57 @@ const CodeSnippetItem: React.FC<{ snippet: CodeSnippet }> = ({ snippet }) => {
              }`}>
                  {snippet.description}
              </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+interface CollapsibleImageItemProps {
+  src: string;
+  alt: string;
+  summary: string;
+}
+
+const CollapsibleImageItem: React.FC<CollapsibleImageItemProps> = ({ src, alt, summary }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  return (
+    <div className="my-6 rounded-xl overflow-hidden border border-yellow-600/30 bg-yellow-900/10 shadow-lg transition-all duration-300">
+      {/* Header / Toggle Button */}
+      <button
+        onClick={toggle}
+        className="w-full flex items-center justify-between p-4 bg-yellow-900/20 hover:bg-yellow-900/30 transition-colors text-yellow-400 group"
+      >
+        <div className="flex items-center gap-2 font-semibold">
+          <Image size={20} className="group-hover:text-yellow-300" />
+          <span>Show Me: {summary}</span>
+        </div>
+        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+      </button>
+
+      {/* Content */}
+      {isOpen && (
+        <div className="animate-fadeIn border-t border-yellow-600/20">
+          {/* Image */}
+          <div className="p-6 bg-black/20">
+            <img
+              src={src}
+              alt={alt}
+              className="max-w-full h-auto rounded-lg border border-gray-700"
+            />
+          </div>
+          
+          {/* Alt text as description */}
+          {alt && (
+            <div className="px-4 py-3 text-sm italic text-yellow-200/80 bg-yellow-900/20">
+              {alt}
+            </div>
           )}
         </div>
       )}

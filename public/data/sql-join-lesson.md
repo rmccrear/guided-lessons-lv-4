@@ -105,6 +105,53 @@ Now we look at Movies, Actors, and Casting. This is slightly harder because an A
 1.  Go to [SQL Zoo More JOIN Operations](https://sqlzoo.net/wiki/More_JOIN_operations).
 2.  Try exercises 1 through 7.
 
+### Diving Deeper: Understanding Many-to-Many Relationships
+
+In the previous "Game and Goal" example, we had a simple **One-to-Many** relationship: One game can have many goals, but one specific goal can only belong to one game.
+
+The **Movie** database introduces a complexity called a **Many-to-Many** relationship.
+
+### The Problem
+
+Imagine trying to track movies and actors with only two tables:
+
+1.  **If you put actors in the Movie table:** You would need a column for every single actor (Actor1, Actor2, Actor3...), which is messy and limited.
+
+2.  **If you put movies in the Actor table:** You would have to duplicate the actor's personal info for every movie they've ever done.
+
+### The Solution: The Join Table
+
+To solve this, database designers use a third table, often called a **Join Table** (or Associative Table/Bridge Table). In SQL Zoo, this is the `casting` table.
+
+The `casting` table doesn't hold much information about the movie or the actor itself. Instead, it holds **Foreign Keys**:
+
+  * `movieid`: Points to the Movie table.
+
+  * `actorid`: Points to the Actor table.
+
+Each row in `casting` represents a single "ticket" or connection: *"Actor X played a role in Movie Y."*
+
+![A diagram illustrating how to resolve a Many-to-Many relationship in SQL. It displays three tables: "Movie" on the left and "Actor" on the right, which are strictly separated. In the center is the "Casting" table, labeled as the "Join Table." Connector lines visualize the "Three-Table Hop": one line links the Movie ID to the Casting table, and another links the Actor ID to the Casting table, showing how the middle table acts as a bridge to connect movies to their actors.](/assets/sql-join/sql-many-to-many-movie-casting-actor.png)
+
+### The "Three-Table Hop"
+
+Because the data is separated into three tables, you cannot simply join `movie` directly to `actor`. You must "hop" through the middle table using two `JOIN` statements.
+
+**The Pattern:**
+
+1.  **Start** at Table A (`movie`).
+
+2.  **Join** to the Middle Table (`casting`) to get the list of actor IDs for that movie.
+
+3.  **Join** to Table B (`actor`) to translate those IDs into names.
+
+### Summary Table
+
+| Relationship Type | Example | How they link |
+| :--- | :--- | :--- |
+| **One-to-Many** | Game -\> Goals | The "Many" side (Goal) has a column holding the ID of the "One" side (Game). |
+| **Many-to-Many** | Movie \<-\> Actor | They **cannot** link directly. They require a **Join Table** (`casting`) in the middle to hold pairs of IDs. |
+
 ## Reviewing Movie JOINs
 
 **Goal:** Check your solutions for the movie database.
@@ -113,7 +160,7 @@ Did you struggle with Question 7? "List the casting list for the film 'Alien'".
 
 To get this, we had to join three tables: `movie` -> `casting` -> `actor`.
 
-![A database schema diagram illustrating the 3-way JOIN required to list the cast of the film 'Alien'. Three tables are displayed: 'Movie' (left), 'Casting' (center), and 'Actor' (right). Connector lines visualize the relationship: the movie.id joins to casting.movieid, and casting.actorid joins to actor.id. This visualizes how the 'Casting' table acts as a bridge to resolve the many-to-many relationship between movies and actors.](/assets/sql-join/sql-movie-casting-actor-join-schema.png)
+![A database schema diagram illustrating the 3-way JOIN required to list the cast of the film 'Alien'. Three tables are displayed: 'Movie' (left), 'Casting' (center), and 'Actor' (right). Connector lines visualize the relationship: the movie.id joins to casting.movieid, and casting.actorid joins to actor.id. This visualizes how the 'Casting' table acts as a bridge to resolve the many-to-many relationship between movies and actors.:Show Me: The 3-Way JOIN Schema](/assets/sql-join/sql-movie-casting-actor-join-schema.png)
 
 ### 💡 Code Hints
 
