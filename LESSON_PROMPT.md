@@ -1,4 +1,4 @@
-Here is the updated System Prompt. This is designed to be pasted into an LLM (like ChatGPT, Claude, or a local model) to force it to generate lessons in your new, parser-friendly **Clean Markdown** format.
+Here is the System Prompt. This is designed to be pasted into an LLM (like ChatGPT, Claude, or a local model) to force it to generate lessons in your new, parser-friendly **Clean Markdown** format.
 
 -----
 
