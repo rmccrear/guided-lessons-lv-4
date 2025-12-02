@@ -60,6 +60,8 @@ Look at this data from **SQL Zoo**:
 * **Primary Key (PK):** The `id` in the `game` table. It identifies the game uniquely.
 * **Foreign Key (FK):** The `matchid` in the `goal` table. It points back to the game.
 
+![A diagram illustrating the relationship between two database tables. The top table, labeled "game" (Parent), highlights the 'id' column as the Primary Key (PK) with the value 1001. A connector line draws a path from this ID down to the bottom table, labeled "goal" (Child). The line connects to the 'matchid' column, labeled as the Foreign Key (FK), showing that the value 1001 appears in multiple rows to link the goals back to the specific game.](/assets/sql-join/primary-vs-foreign-keys-database-glue.png)
+
 ## SQL Zoo: The JOIN Operation
 
 **Goal:** Practice connecting tables using standard SQL.
