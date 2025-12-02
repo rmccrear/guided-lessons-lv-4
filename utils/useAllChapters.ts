@@ -115,7 +115,7 @@ export function useAllChapters(chapters: Chapter[]): { chapters: Chapter[]; load
         };
 
         loadChapters();
-    }, []);
+    }, [chapters]);
 
     return { chapters: parsedChapters, loading };
 }
