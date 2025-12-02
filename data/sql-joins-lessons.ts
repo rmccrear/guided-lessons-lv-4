@@ -78,6 +78,8 @@ Imagine you have two separate spreadsheets printed out on paper.
 
 To combine them, you would place Sheet B next to Sheet A, lining up every Goal row next to the specific Game row it belongs to. That alignment process is exactly what a \`JOIN\` does. It stitches the rows together wherever the IDs match.
 
+![A diagram illustrating the SQL JOIN operation. On the left, two tables labeled "Sheet A (Game)" and "Sheet B (Goal)" are shown. Lines connect the id column in the Game table to the matchid column in the Goal table, demonstrating how the data aligns based on matching IDs. On the right, a "JOINED Result" table displays the final output, combining rows to show matchid, player, and stadium columns together in a single view.](/assets/sql-join/sql-join-game-goal-diagram.png)
+
 ### Instructions
 1.  Open the [SQL Zoo JOIN Operation](https://sqlzoo.net/wiki/The_JOIN_operation) tutorial.
 2.  Read the introduction about \`JOIN\` and \`ON\`.
@@ -116,6 +118,53 @@ Now we look at Movies, Actors, and Casting. This is slightly harder because an A
 ### Instructions
 1.  Go to [SQL Zoo More JOIN Operations](https://sqlzoo.net/wiki/More_JOIN_operations).
 2.  Try exercises 1 through 7.
+
+### Diving Deeper: Understanding Many-to-Many Relationships
+
+In the previous "Game and Goal" example, we had a simple **One-to-Many** relationship: One game can have many goals, but one specific goal can only belong to one game.
+
+The **Movie** database introduces a complexity called a **Many-to-Many** relationship.
+
+### The Problem
+
+Imagine trying to track movies and actors with only two tables:
+
+1.  **If you put actors in the Movie table:** You would need a column for every single actor (Actor1, Actor2, Actor3...), which is messy and limited.
+
+2.  **If you put movies in the Actor table:** You would have to duplicate the actor's personal info for every movie they've ever done.
+
+### The Solution: The Join Table
+
+To solve this, database designers use a third table, often called a **Join Table** (or Associative Table/Bridge Table). In SQL Zoo, this is the \`casting\` table.
+
+The \`casting\` table doesn't hold much information about the movie or the actor itself. Instead, it holds **Foreign Keys**:
+
+  * \`movieid\`: Points to the Movie table.
+
+  * \`actorid\`: Points to the Actor table.
+
+Each row in \`casting\` represents a single "ticket" or connection: *"Actor X played a role in Movie Y."*
+
+![A diagram illustrating how to resolve a Many-to-Many relationship in SQL. It displays three tables: "Movie" on the left and "Actor" on the right, which are strictly separated. In the center is the "Casting" table, labeled as the "Join Table." Connector lines visualize the "Three-Table Hop": one line links the Movie ID to the Casting table, and another links the Actor ID to the Casting table, showing how the middle table acts as a bridge to connect movies to their actors.](/assets/sql-join/sql-many-to-many-movie-casting-actor.png)
+
+### The "Three-Table Hop"
+
+Because the data is separated into three tables, you cannot simply join \`movie\` directly to \`actor\`. You must "hop" through the middle table using two \`JOIN\` statements.
+
+**The Pattern:**
+
+1.  **Start** at Table A (\`movie\`).
+
+2.  **Join** to the Middle Table (\`casting\`) to get the list of actor IDs for that movie.
+
+3.  **Join** to Table B (\`actor\`) to translate those IDs into names.
+
+### Summary Table
+
+| Relationship Type | Example | How they link |
+| :--- | :--- | :--- |
+| **One-to-Many** | Game -\> Goals | The "Many" side (Goal) has a column holding the ID of the "One" side (Game). |
+| **Many-to-Many** | Movie \<-\> Actor | They **cannot** link directly. They require a **Join Table** (\`casting\`) in the middle to hold pairs of IDs. |
 `
   },
   {
@@ -129,6 +178,8 @@ Now we look at Movies, Actors, and Casting. This is slightly harder because an A
 Did you struggle with Question 7? "List the casting list for the film 'Alien'".
 
 To get this, we had to join three tables: \`movie\` -> \`casting\` -> \`actor\`.
+
+![A database schema diagram illustrating the 3-way JOIN required to list the cast of the film 'Alien'. Three tables are displayed: 'Movie' (left), 'Casting' (center), and 'Actor' (right). Connector lines visualize the relationship: the movie.id joins to casting.movieid, and casting.actorid joins to actor.id. This visualizes how the 'Casting' table acts as a bridge to resolve the many-to-many relationship between movies and actors.:Show Me: The 3-Way JOIN Schema](/assets/sql-join/sql-movie-casting-actor-join-schema.png)
 
 ### 💡 Code Hints
 
@@ -218,6 +269,8 @@ ONE Meal belongs to ONE Event.
 
 We need to tell the **Meals** which **Event** they belong to. Since a Meal belongs to an Event, the Meal table holds the key (the "Foreign Key").
 
+![A database schema diagram showing the One-to-Many relationship between two tables: potluck_events and potluck_meals. The potluck_events table is shown as the parent table with a primary key id. The potluck_meals table is shown as the child table with a new column highlighted as event_id. A line connects potluck_meals.event_id to potluck_events.id, visually representing the Foreign Key link that assigns specific meals to specific events.](/assets/sql-join/supabase-potluck-foreign-key-schema.png)
+
 ### Instructions
 1.  Edit the \`potluck_meals\` table.
 2.  Add a new column.
@@ -267,6 +320,8 @@ WHERE event_id = 1;
 **User Story:** As a developer, I want to find all meals for "Summer BBQ", but the Meal table doesn't know the name "Summer BBQ", it only knows ID \`1\`.
 
 We must JOIN to ask questions about the Event's **name** or **date**.
+
+![A conceptual SQL diagram illustrating a query filtering by name. On the left, the potluck_events table shows a row with id: 1 and name: 'Summer BBQ'. On the right, the potluck_meals table shows rows with event_id: 1. A directional flow indicates the logic: the query finds 'Summer BBQ' in the first table, grabs the ID (1), and uses that connection to retrieve the matching meals from the second table.](/assets/sql-join/sql-join-filtering-by-event-name.png)
 
 ### Challenge
 Write a query to find all meals for the event named 'Summer BBQ'.
@@ -347,6 +402,8 @@ Both of them!
     content: `
 **Goal:** Add the columns in Supabase.
 
+![A database relationship diagram illustrating how Supabase Authentication links to the application data. On the left, a block represents the auth.users table. Two arrows originate from this user table: one points strictly to the user_id column in the potluck_events table (identifying the Host), and the second points strictly to the user_id column in the potluck_meals table (identifying the Cook).](/assets/sql-join/supabase-auth-users-linked-to-events-and-meals.png)
+
 ### Instructions
 1.  **Update \`potluck_events\`:**
     * Add column \`user_id\`.
@@ -391,20 +448,24 @@ WHERE user_id = 'c02111-YOUR-UUID-GOES-HERE';
     ]
   },
   {
-    id: "sql-joins-relationships-user-query-hosting-dashboard",
-    title: "User Query: Hosting Dashboard",
+    id: "sql-joins-relationships-user-query-hosting-dashboard-challenge",
+    title: "User Query: Hosting Dashboard (Challenge)",
     description: "Master Foreign Keys and JOINs by building a complete event management schema.",
-    type: "exercise",
+    type: "challenge",
     content: `
-**Goal:** The Complex Join.
+**Goal:** Write the Complex Join.
 
 **User Story:** As User A (The Host), I want to see **every meal** coming to **any of my parties**.
 
+### Challenge
+
+Write a query that shows all meals for events hosted by a specific user.
+
+**Hints:**
 * I am NOT the cook (so I can't check \`potluck_meals.user_id\`).
 * I am the HOST (so I must check \`potluck_events.user_id\`).
 * I need the food info (so I must SELECT from \`potluck_meals\`).
-
-This requires a JOIN.
+* This requires a JOIN.
 
 \`\`\`sql:Show Me: The Host Query
 SELECT potluck_meals.meal_name, potluck_meals.guest_name

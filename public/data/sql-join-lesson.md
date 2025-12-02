@@ -283,6 +283,8 @@ Both of them!
 
 **Goal:** Add the columns in Supabase.
 
+![A database relationship diagram illustrating how Supabase Authentication links to the application data. On the left, a block represents the auth.users table. Two arrows originate from this user table: one points strictly to the user_id column in the potluck_events table (identifying the Host), and the second points strictly to the user_id column in the potluck_meals table (identifying the Cook).](/assets/sql-join/supabase-auth-users-linked-to-events-and-meals.png)
+
 ### Instructions
 1.  **Update `potluck_events`:**
     * Add column `user_id`.
@@ -308,17 +310,21 @@ SELECT * FROM potluck_events
 WHERE user_id = 'c02111-YOUR-UUID-GOES-HERE';
 ```
 
-## User Query: Hosting Dashboard
+## User Query: Hosting Dashboard (Challenge)
 
-**Goal:** The Complex Join.
+**Goal:** Write the Complex Join.
 
 **User Story:** As User A (The Host), I want to see **every meal** coming to **any of my parties**.
 
+### Challenge
+
+Write a query that shows all meals for events hosted by a specific user.
+
+**Hints:**
 * I am NOT the cook (so I can't check `potluck_meals.user_id`).
 * I am the HOST (so I must check `potluck_events.user_id`).
 * I need the food info (so I must SELECT from `potluck_meals`).
-
-This requires a JOIN.
+* This requires a JOIN.
 
 ```sql:Show Me: The Host Query
 SELECT potluck_meals.meal_name, potluck_meals.guest_name
