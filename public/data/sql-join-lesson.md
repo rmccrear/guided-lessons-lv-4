@@ -74,6 +74,8 @@ Imagine you have two separate spreadsheets printed out on paper.
 
 To combine them, you would place Sheet B next to Sheet A, lining up every Goal row next to the specific Game row it belongs to. That alignment process is exactly what a `JOIN` does. It stitches the rows together wherever the IDs match.
 
+![A diagram illustrating the SQL JOIN operation. On the left, two tables labeled "Sheet A (Game)" and "Sheet B (Goal)" are shown. Lines connect the id column in the Game table to the matchid column in the Goal table, demonstrating how the data aligns based on matching IDs. On the right, a "JOINED Result" table displays the final output, combining rows to show matchid, player, and stadium columns together in a single view.](/assets/sql-join/sql-join-game-goal-diagram.png)
+
 ### Instructions
 1.  Open the [SQL Zoo JOIN Operation](https://sqlzoo.net/wiki/The_JOIN_operation) tutorial.
 2.  Read the introduction about `JOIN` and `ON`.
@@ -110,6 +112,8 @@ Now we look at Movies, Actors, and Casting. This is slightly harder because an A
 Did you struggle with Question 7? "List the casting list for the film 'Alien'".
 
 To get this, we had to join three tables: `movie` -> `casting` -> `actor`.
+
+![A database schema diagram illustrating the 3-way JOIN required to list the cast of the film 'Alien'. Three tables are displayed: 'Movie' (left), 'Casting' (center), and 'Actor' (right). Connector lines visualize the relationship: the movie.id joins to casting.movieid, and casting.actorid joins to actor.id. This visualizes how the 'Casting' table acts as a bridge to resolve the many-to-many relationship between movies and actors.](/assets/sql-join/sql-movie-casting-actor-join-schema.png)
 
 ### 💡 Code Hints
 
