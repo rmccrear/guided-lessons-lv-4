@@ -41,7 +41,8 @@ function extractChapterMeta(frontmatter: string) {
     const getField = (key: string) => frontmatter.match(new RegExp(`${key}:\\s*(.*)`))?.[1]?.trim();
     return {
         id: getField('id') || 'unknown',
-        title: getField('title') || 'Untitled Chapter'
+        title: getField('title') || 'Untitled Chapter',
+        type: getField('type') || 'exercise'
     };
 }
 
@@ -70,10 +71,17 @@ function parseMarkdownToLessons(markdownContent: string): Lesson[] {
         const sectionTitleMatch = section.match(/^## (.+)/);
         const sectionTitle = sectionTitleMatch ? sectionTitleMatch[1].trim() : lesson.title;
         
+        // Auto-detect challenge type if title contains "Challenge"
+        let lessonType = chapterMeta.type as 'reading' | 'exercise' | 'challenge' | 'setup';
+        if (sectionTitle.toLowerCase().includes('challenge')) {
+            lessonType = 'challenge';
+        }
+        
         return {
             ...lesson,
             id: generateLessonId(sectionTitle, chapterMeta.id, index),
-            title: sectionTitle
+            title: sectionTitle,
+            type: lessonType
         };
     });
 }

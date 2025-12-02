@@ -154,7 +154,13 @@ try {
         
         lesson.id = generateLessonId(section, chapterMeta.chapterId, index);
         lesson.title = sectionTitle;
-        lesson.type = chapterMeta.type as any;
+        
+        // Auto-detect challenge type if title contains "Challenge"
+        if (sectionTitle.toLowerCase().includes('challenge')) {
+            lesson.type = 'challenge';
+        } else {
+            lesson.type = chapterMeta.type as any;
+        }
         
         // Remove the ## header from content since title is extracted
         lesson.content = section.replace(/^##\s+.+\n/, '').trim();
