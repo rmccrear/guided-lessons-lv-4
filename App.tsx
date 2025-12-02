@@ -8,6 +8,7 @@ import { Menu, X, GraduationCap, MessageSquareText, LayoutGrid } from 'lucide-re
 import Course from './components/Course';
 import { CHAPTERS } from './data/chapters-constants';
 import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom';
+import { useMarkdownChapter } from './utils/useMarkdownChapter';
 
 function LessonShell() {
   const navigate = useNavigate();
@@ -16,10 +17,12 @@ function LessonShell() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isTutorOpen, setIsTutorOpen] = useState(false);
 
-  // Find the current chapter based on URL
-  const currentChapter = useMemo(() => {
+  // Find the current chapter based on URL and parse markdown if needed
+  const rawChapter = useMemo(() => {
     return CHAPTERS.find(ch => ch.slug === params.chapterSlug) || CHAPTERS[0];
   }, [params.chapterSlug]);
+  
+  const currentChapter = useMarkdownChapter(rawChapter);
 
   // Find the current lesson within the chapter
   const currentLesson = useMemo(() => {
@@ -34,18 +37,16 @@ function LessonShell() {
     const map: Record<string, string> = {};
     CHAPTERS.forEach((ch) => ch.lessons.forEach((l) => (map[l.id] = ch.slug)));
     return map;
-  }, []);
+  }, [CHAPTERS]);
 
-  // Initialize status on load
+  // Initialize status on load - use currentChapter's lessons
   useEffect(() => {
     const initialStatus: Record<string, LessonStatus> = {};
-    CHAPTERS.forEach((chapter) => {
-      chapter.lessons.forEach((lesson) => {
-        initialStatus[lesson.id] = { completed: false };
-      });
+    currentChapter.lessons.forEach((lesson) => {
+      initialStatus[lesson.id] = { completed: false };
     });
-    setLessonStatus(initialStatus);
-  }, []);
+    setLessonStatus((prev) => ({ ...prev, ...initialStatus }));
+  }, [currentChapter]);
 
   const handleLessonSelect = (lesson: Lesson) => {
     const chapterSlug = chapterByLessonId[lesson.id] || currentChapter.slug;

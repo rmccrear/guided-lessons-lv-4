@@ -31,6 +31,7 @@ export interface Chapter {
   title: string;
   description: string;
   lessons: Lesson[];
+  markdownPath?: string; // Optional: Path to markdown file to parse lessons dynamically
 }
 
 export interface LessonStatus {

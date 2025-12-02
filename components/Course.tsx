@@ -3,6 +3,7 @@ import { Chapter } from '../types';
 import { CHAPTERS } from '../data/chapters-constants';
 import ChapterCard from './ChapterCard';
 import { Menu } from 'lucide-react';
+import { useAllChapters } from '../utils/useAllChapters';
 
 export interface CourseProps {
   chapters?: Chapter[];
@@ -13,7 +14,8 @@ export interface CourseProps {
  * Course layout: left nav with chapter titles, main panel with all ChapterCards.
  */
 export function Course({ chapters, onOpenChapter }: CourseProps) {
-  const list = useMemo(() => chapters ?? CHAPTERS, [chapters]);
+  const rawList = useMemo(() => chapters ?? CHAPTERS, [chapters]);
+  const { chapters: list, loading } = useAllChapters(rawList);
 
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden">

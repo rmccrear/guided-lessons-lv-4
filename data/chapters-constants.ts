@@ -15,6 +15,8 @@ export const CHAPTERS: Chapter[] = [
     slug: 'sql-joins',
     title: 'SQL Joins',
     description: 'Master Foreign Keys and JOINs by building a complete event management schema',
-    lessons: SQL_JOINS_RELATIONSHIPS_LESSONS
+    lessons: SQL_JOINS_RELATIONSHIPS_LESSONS,
+    // Optional: Use markdown file directly instead of pre-compiled lessons
+    // markdownPath: '/data/sql-join-lesson.md'
   }
 ];
