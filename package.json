@@ -13,6 +13,7 @@
     "test:ui": "vitest --ui",
     "parse-all-chapters": "tsx scripts/parse-all-chapters.ts",
     "create-chapter": "tsx scripts/create-chapter.ts",
+    "sync-chapters:dev": "tsx scripts/update-chapter-constants.ts dev",
     "sync-chapters:prod": "npm run parse-all-chapters && tsx scripts/update-chapter-constants.ts production"
   },
   "dependencies": {
@@ -30,11 +31,11 @@
   },
   "devDependencies": {
     "@types/node": "^22.19.1",
-    "@vitejs/plugin-react": "^5.0.0",
+    
     "glob": "^13.0.0",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0",
+    
     "vitest": "^4.0.14"
   }
 }

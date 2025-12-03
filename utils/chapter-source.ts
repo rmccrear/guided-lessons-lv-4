@@ -5,6 +5,10 @@ import { splitIntoSections, extractChapterMeta, parseChapterSections } from './c
 // Simple in-memory cache for parsed markdown lessons per chapter id
 const lessonsCache: Map<string, Chapter> = new Map();
 
+function clearCache() {
+  lessonsCache.clear();
+}
+
 async function parseMarkdownIfAvailable(chapter: Chapter): Promise<Chapter> {
   if (!chapter.markdownPath) return chapter;
 
@@ -17,7 +21,7 @@ async function parseMarkdownIfAvailable(chapter: Chapter): Promise<Chapter> {
     const lessons = parseChapterSections(sections, frontmatter, { chapterId: meta.id, type: meta.type });
     return { ...chapter, lessons };
   } catch (err) {
-    console.error(`Markdown parse failed for ${chapter.id}:`, err);
+    console.warn(`Markdown parse failed or unavailable for chapter '${chapter.slug ?? chapter.id}'. Falling back to TS lessons.`, err);
     return chapter;
   }
 }
@@ -28,6 +32,10 @@ export function useChapterSource(rawChapter: Chapter, useMarkdown: boolean): Cha
   useEffect(() => {
     let mounted = true;
     async function load() {
+      // Ensure we don't serve stale TS results when switching to markdown mode
+      if (useMarkdown) {
+        clearCache();
+      }
       if (!useMarkdown) {
         setChapter(rawChapter);
         return;
@@ -59,6 +67,9 @@ export function useChaptersSource(rawChapters: Chapter[], useMarkdown: boolean):
   useEffect(() => {
     let mounted = true;
     async function loadAll() {
+      if (useMarkdown) {
+        clearCache();
+      }
       if (!useMarkdown) {
         setChapters(rawChapters);
         return;

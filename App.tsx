@@ -7,6 +7,7 @@ import { Lesson, LessonStatus, Chapter } from './types';
 import { Menu, X, GraduationCap, MessageSquareText, LayoutGrid } from 'lucide-react';
 import Course from './components/Course';
 import { CHAPTERS } from './data/chapters-constants';
+import { useMarkdownEnv } from './utils/env';
 import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { useChapterSource } from './utils/chapter-source';
 
@@ -22,8 +23,7 @@ function LessonShell() {
     return CHAPTERS.find(ch => ch.slug === params.chapterSlug) || CHAPTERS[0];
   }, [params.chapterSlug]);
   
-  const envVal = import.meta.env.VITE_APP_USE_MARKDOWN ?? '';
-  const useMarkdown = ['true', '1', 'yes'].includes(String(envVal).toLowerCase());
+  const useMarkdown = useMarkdownEnv();
 
   const currentChapter = useChapterSource(rawChapter, useMarkdown);
 

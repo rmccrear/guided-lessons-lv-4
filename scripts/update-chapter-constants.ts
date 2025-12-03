@@ -127,24 +127,28 @@ function updateToDevMode(): void {
     importsToRemove.add(constantName);
     
     // Find chapter object - more flexible regex that handles multiline
+    // We capture the whole object content to clean it manually
     const chapterRegex = new RegExp(
-      `(\\{[^}]*slug:\\s*['"]${mdSlug}['"][^}]*?)(?:lessons:\\s*(?:${constantName}|\\[\\]))?([^}]*?)(\\})`,
+      `(\\{[^}]*slug:\\s*['"]${mdSlug}['"][^}]*?)(\\})`,
       'gs'
     );
     
-    updatedContent = updatedContent.replace(chapterRegex, (match, before, middle, closeBrace) => {
+    updatedContent = updatedContent.replace(chapterRegex, (match, content, closeBrace) => {
       // Remove any existing lessons or markdownPath properties
-      let cleaned = before + middle;
-      cleaned = cleaned.replace(/\s*,?\s*lessons:\s*[A-Z_]+/g, '');
-      cleaned = cleaned.replace(/\s*,?\s*markdownPath:\s*['"][^'"]*['"]/g, '');
+      let cleaned = content;
+      // Remove lessons: ... (array or constant)
+      cleaned = cleaned.replace(/,\s*lessons:\s*(\[[^\]]*\]|[A-Z_]+)/g, '');
+      // Remove markdownPath: ...
+      cleaned = cleaned.replace(/,\s*markdownPath:\s*['"][^'"]*['"]/g, '');
       
-      // Ensure proper comma before new properties
-      if (!cleaned.trimEnd().endsWith(',')) {
-        cleaned = cleaned.trimEnd() + ',';
+      // Clean up trailing commas and spaces
+      cleaned = cleaned.trimEnd();
+      if (cleaned.endsWith(',')) {
+        cleaned = cleaned.slice(0, -1);
       }
       
       // Add dev mode properties
-      return `${cleaned}\n    lessons: [],\n    markdownPath: '${markdownPath}'\n  ${closeBrace}`;
+      return `${cleaned},\n    lessons: [],\n    markdownPath: '${markdownPath}'\n  ${closeBrace}`;
     });
   }
   

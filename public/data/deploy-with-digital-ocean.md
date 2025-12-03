@@ -307,3 +307,90 @@ You verified the following skills:
 ### Next Steps
 
 Try configuring a domain name for your Droplet to replace that IP address!
+
+## Understanding Clean Up: Destroying Your Droplet
+
+In the cloud, you pay for what you reserve, not just what you use. A common mistake beginners make is "stopping" (turning off) a server and assuming the billing stops.
+
+**It does not.** Even if a server is powered off, DigitalOcean must reserve the disk space and IP address for you, so they continue to charge you. To stop the billing completely, you must **destroy** the Droplet.
+
+### Overview
+
+**What you'll learn:**
+
+* The difference between "Power Off" and "Destroy"
+* Navigating the Destroy menu
+* Verifying resource removal
+
+## Understanding: Power Off vs. Destroy
+
+**Goal:** Understand the billing implications of your actions.
+
+**User Story:** As a Freelancer, I need to understand how cloud billing works so that I don't receive invoices for projects I finished months ago.
+
+### The Distinction
+
+* **Power Off (Halt):** You turn the computer off. The CPU and RAM are freed, but the **Hard Drive (SSD)** and **IP Address** remain yours. **You are still billed.**
+* **Destroy:** You delete the virtual machine entirely. The data is wiped, the IP is released to the public pool, and the SSD is formatted. **Billing stops immediately.**
+
+## Destroying the Resource
+
+**Goal:** Permanently remove the server we created in this chapter.
+
+**User Story:** As a Project Manager, I want to decommission unused environments to keep project costs within budget.
+
+### Instructions
+
+1.  **Navigate to Settings**
+    * Go back to your DigitalOcean main dashboard.
+    * Click on the name of your Droplet (`node-demo-server`).
+    * In the left-hand sidebar menu, look for the option at the very bottom called **Destroy**.
+
+2.  **Skip the Snapshots**
+    * DigitalOcean will ask if you want to take a "Snapshot" (a backup) before destroying.
+    * Since this was just a practice exercise, we do not need a backup.
+    * Scroll down to the section titled **"Destroy Droplet"**.
+
+3.  **Confirm Destruction**
+    * Click the big red button labeled **"Destroy this Droplet"**.
+    * **Security Check:** To prevent accidental deletion, you will be asked to type the name of the Droplet to confirm.
+    * Type: `node-demo-server` (or whatever you named it).
+    * Click **Destroy**.
+
+4.  **Verify Removal**
+    * You will be redirected to the Project Dashboard.
+    * Ensure the list of Droplets is now empty.
+    * A blue notification usually appears in the top right saying "Droplet has been destroyed."
+
+## Challenge: Check Your Billing
+
+**Goal:** Ensure no other hidden costs are lingering.
+
+**User Story:** As a User, I want to double-check my active resources to ensure my account balance is safe.
+
+### The Task
+Navigate to the billing section to confirm your current usage.
+
+### Instructions
+1.  Click **"Manage"** in the left sidebar (main navigation).
+2.  Click **"Billing"**.
+3.  Scroll down to "Month-to-Date Summary".
+4.  You should see a very small charge (likely less than $0.05) for the time the server was running today.
+
+### 🔍 Diving Deeper
+
+**Hourly vs. Monthly Billing**
+DigitalOcean (and most cloud providers) bills by the hour, up to a monthly cap.
+If a Droplet costs $6/month, that is roughly **$0.009 per hour**.
+If you run a server for 2 hours to practice and then destroy it, you strictly pay for those 2 hours (approx $0.02). This makes the cloud an incredibly cheap place to learn if you remember to clean up!
+
+### Chapter Complete! 🏆
+
+**You have finished the "First Steps in the Cloud" chapter.**
+
+### Summary
+In this chapter, you have:
+1.  **Provisioned** a fresh Linux server (Ubuntu).
+2.  **Accessed** it via a web console without needing SSH keys.
+3.  **Deployed** a Node.js application using Git and PM2.
+4.  **Decommissioned** the server to save money.
