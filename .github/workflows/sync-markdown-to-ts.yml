@@ -6,12 +6,8 @@ permissions:
 on:
   push:
     branches: [main]
-    paths:
-      - 'public/data/*.md'
-      - 'data/chapters-constants.ts'
   pull_request:
-    paths:
-      - 'public/data/*.md'
+    branches: [main]
   workflow_dispatch:
 
 jobs:
