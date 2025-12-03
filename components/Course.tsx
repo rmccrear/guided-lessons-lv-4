@@ -3,7 +3,7 @@ import { Chapter } from '../types';
 import { CHAPTERS } from '../data/chapters-constants';
 import ChapterCard from './ChapterCard';
 import { Menu, X } from 'lucide-react';
-import { useAllChapters } from '../utils/useAllChapters';
+import { useChaptersSource } from '../utils/chapter-source';
 
 export interface CourseProps {
   chapters?: Chapter[];
@@ -17,7 +17,7 @@ export function Course({ chapters, onOpenChapter }: CourseProps) {
   const rawList = useMemo(() => chapters ?? CHAPTERS, [chapters]);
   const envVal = import.meta.env.VITE_APP_USE_MARKDOWN ?? '';
   const useMarkdown = ['true', '1', 'yes'].includes(String(envVal).toLowerCase());
-  const { chapters: list, loading } = useMarkdown ? useAllChapters(rawList) : { chapters: rawList, loading: false } as any;
+  const { chapters: list, loading } = useChaptersSource(rawList, useMarkdown);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (

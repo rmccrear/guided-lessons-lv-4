@@ -4,16 +4,8 @@ import { readFileSync, writeFileSync } from 'fs';
 import { resolve, basename } from 'path';
 import { glob } from 'glob';
 
-/**
- * Map markdown filename to chapter ID
- * This mapping is needed when markdown filename doesn't match the chapter slug
- */
-const MD_FILE_TO_CHAPTER_ID: Record<string, string> = {
-  'sql-joins-relationships.md': 'sql-joins',
-  'express-server-setup.md': 'express-rest-server-in-memory',
-  'persistence-with-supabase.md': 'express-supabase',
-  'deploy-with-digital-ocean.md': 'deploy-node-do-console',
-};
+// Convention: chapter.slug must match the markdown filename (without .md)
+// This allows us to eliminate brittle filename→chapter ID mappings.
 
 /**
  * Map markdown filename to expected constant name
@@ -67,12 +59,7 @@ function updateToTSMode(): void {
   // Process each markdown file
   for (const mdFile of mdFiles) {
     const mdFilename = basename(mdFile);
-    const chapterId = MD_FILE_TO_CHAPTER_ID[mdFilename];
-    
-    if (!chapterId) {
-      console.warn(`⚠️  No chapter mapping found for ${mdFilename}, skipping`);
-      continue;
-    }
+    const mdSlug = basename(mdFile, '.md');
     
     const constantName = getConstantName(mdFilename);
     const importPath = getTSImportPath(mdFilename);
@@ -84,8 +71,9 @@ function updateToTSMode(): void {
     }
     
     // Find chapter object and replace its properties section
+    // Find chapter object by matching slug to md filename
     const chapterRegex = new RegExp(
-      `(\\{\\s*id:\\s*['"]${chapterId}['"],\\s*slug:\\s*['"][^'"]*['"],\\s*title:\\s*['"][^'"]*['"],\\s*description:\\s*['"][^'"]*['"])([^}]*)(\\})`,
+      `(\\{\\s*id:\\s*['"][^'"]*['"],\\s*slug:\\s*['"]${mdSlug}['"],\\s*title:\\s*['"][^'"]*['"],\\s*description:\\s*['"][^'"]*['"])([^}]*)(\\})`,
       'gs'
     );
     
@@ -130,11 +118,7 @@ function updateToDevMode(): void {
   // Process each markdown file
   for (const mdFile of mdFiles) {
     const mdFilename = basename(mdFile);
-    const chapterId = MD_FILE_TO_CHAPTER_ID[mdFilename];
-    
-    if (!chapterId) {
-      continue;
-    }
+    const mdSlug = basename(mdFile, '.md');
     
     const constantName = getConstantName(mdFilename);
     const markdownPath = `/data/${mdFilename}`;
@@ -144,7 +128,7 @@ function updateToDevMode(): void {
     
     // Find chapter object - more flexible regex that handles multiline
     const chapterRegex = new RegExp(
-      `(\\{[^}]*id:\\s*['"]${chapterId}['"][^}]*?)(?:lessons:\\s*(?:${constantName}|\\[\\]))?([^}]*?)(\\})`,
+      `(\\{[^}]*slug:\\s*['"]${mdSlug}['"][^}]*?)(?:lessons:\\s*(?:${constantName}|\\[\\]))?([^}]*?)(\\})`,
       'gs'
     );
     

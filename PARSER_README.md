@@ -17,14 +17,13 @@ Core Components
 
 Dev Mode (Markdown at runtime)
 
-- Hook: `utils/useMarkdownChapter.ts`
-  - Fetches `chapter.markdownPath` and uses the shared parser:
-    1) `splitIntoSections`
-    2) `extractChapterMeta`
-    3) `parseChapterSections`
-  - Produces `chapter.lessons` in memory. No codegen.
-- Where used: `App.tsx` → `LessonShell` calls `useMarkdownChapter` for the active chapter.
-- Chapter config: `data/chapters-constants.ts` entries include `markdownPath: '/data/<file>.md'` and `lessons: []`.
+- Centralized hooks: `utils/chapter-source.ts`
+  - `useChapterSource(rawChapter, useMarkdown)`: For a single chapter; fetches `markdownPath`, parses via shared parser, and falls back to TS `lessons` on missing path or parse/fetch failure. Includes simple in-memory caching.
+  - `useChaptersSource(rawChapters, useMarkdown)`: For course overview lists; applies the same logic to all chapters with caching.
+- Where used:
+  - `App.tsx` → `LessonShell` calls `useChapterSource` for the active chapter.
+  - `components/Course.tsx` uses `useChaptersSource` for the overview.
+- Chapter config: `data/chapters-constants.ts` entries include both `markdownPath` and TS `lessons` arrays; runtime chooses source via `VITE_APP_USE_MARKDOWN`.
 - Live editing: Changes to files under `public/data/*.md` reflect on refresh.
 
 Prod Mode (compiled TypeScript lessons)
@@ -32,15 +31,15 @@ Prod Mode (compiled TypeScript lessons)
 - Scripted build:
   - `npm run sync-chapters:prod`
     - `npm run parse-all-chapters`: `scripts/parse-all-chapters.ts` reads every `public/data/*.md`, uses the shared parser, and outputs generated lesson modules under `data/*-lessons.ts`.
-    - `tsx scripts/update-chapter-constants.ts production`: rewrites `data/chapters-constants.ts` to import generated lessons and remove `markdownPath`.
+    - `tsx scripts/update-chapter-constants.ts production`: ensures imports exist for generated lessons. We retain `markdownPath` for dev, but production uses TS lessons.
 - Runtime:
   - The app imports `*LESSONS` arrays from `data/*-lessons.ts`.
   - No network fetches of markdown in production.
 
 Course Listing vs Lesson View
 
-- Course overview list may use `useAllChapters` (also refactored to use shared parser) for dev previews.
-- Actual lesson rendering in dev mode uses `useMarkdownChapter`; in prod it reads from generated `*LESSONS`.
+- Course overview uses `useChaptersSource` to render chapter previews consistently.
+- Lesson rendering uses `useChapterSource` for the active chapter in dev; in prod it reads from generated `*LESSONS`.
 
 Show Me Syntax Notes
 
@@ -67,12 +66,11 @@ Typical Workflows
 Troubleshooting
 
 - Dev changes not visible:
-  - Ensure the chapter entry has `markdownPath` and `lessons: []` in `data/chapters-constants.ts`.
-  - Confirm `useMarkdownChapter` is being used for the active chapter in `App.tsx`.
+  - Ensure the chapter entry has `markdownPath` in `data/chapters-constants.ts`.
+  - Confirm `VITE_APP_USE_MARKDOWN=true` and that `useChapterSource`/`useChaptersSource` are wired (they are by default in `App.tsx` and `Course.tsx`).
 
 - Lesson type badges incorrect in dev:
-  - Verify `useMarkdownChapter` imports `splitIntoSections`, `extractChapterMeta`, and `parseChapterSections` from `chapter-parser.ts`.
-  - Check section titles include keywords like "Understanding:" or "Challenge:".
+  - Verify the shared parser (`utils/chapter-parser.ts`) is used; titles should include keywords like "Understanding:" or "Challenge:".
 
 - Hydration errors around Show Me images:
   - Ensure `LessonView.tsx` contains the paragraph-only-image fragment logic to avoid `<div>` inside `<p>`.
@@ -81,9 +79,9 @@ File Locations (key paths)
 
 - `utils/chapter-parser.ts` — shared parser logic
 - `utils/markdown-parser.ts` — raw markdown → lesson converter
-- `utils/useMarkdownChapter.ts` — dev mode loader
+- `utils/chapter-source.ts` — centralized dev runtime loaders with fallback + cache
 - `scripts/parse-all-chapters.ts` — prod codegen for lessons
-- `scripts/update-chapter-constants.ts` — switches chapter config between dev/prod
-- `data/chapters-constants.ts` — chapter registry (dev: markdown; prod: imports)
+- `scripts/update-chapter-constants.ts` — ensures TS imports alongside dev `markdownPath`
+- `data/chapters-constants.ts` — chapter registry (includes both markdownPath and TS lessons)
 - `components/LessonView.tsx` — markdown rendering with custom components
 - `public/data/*.md` — source markdown chapters

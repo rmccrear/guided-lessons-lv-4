@@ -8,7 +8,7 @@ import { Menu, X, GraduationCap, MessageSquareText, LayoutGrid } from 'lucide-re
 import Course from './components/Course';
 import { CHAPTERS } from './data/chapters-constants';
 import { Routes, Route, useNavigate, useParams, Navigate } from 'react-router-dom';
-import { useMarkdownChapter } from './utils/useMarkdownChapter';
+import { useChapterSource } from './utils/chapter-source';
 
 function LessonShell() {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ function LessonShell() {
   const envVal = import.meta.env.VITE_APP_USE_MARKDOWN ?? '';
   const useMarkdown = ['true', '1', 'yes'].includes(String(envVal).toLowerCase());
 
-  const currentChapter = useMarkdown ? useMarkdownChapter(rawChapter) : rawChapter;
+  const currentChapter = useChapterSource(rawChapter, useMarkdown);
 
   // Find the current lesson within the chapter
   const currentLesson = useMemo(() => {

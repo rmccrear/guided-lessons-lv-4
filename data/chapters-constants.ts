@@ -15,34 +15,30 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: 'sql-joins',
-    slug: 'sql-joins',
+    slug: 'sql-joins-relationships',
     title: 'SQL Joins',
     description: 'Master Foreign Keys and JOINs by building a complete event management schema',
-    lessons: SQL_JOINS_RELATIONSHIPS_LESSONS,
-    markdownPath: '/data/sql-joins-relationships.md'
+    lessons: SQL_JOINS_RELATIONSHIPS_LESSONS
   },
   {
     id: 'express-rest-server-in-memory',
-    slug: 'express-rest-server-in-memory',
+    slug: 'express-server-setup',
     title: 'Express REST Server (In Memory)',
     description: 'Build a complete REST API with Express, from setup to in-memory data management',
-    lessons: EXPRESS_SERVER_SETUP_LESSONS,
-    markdownPath: '/data/express-server-setup.md'
+    lessons: EXPRESS_SERVER_SETUP_LESSONS
   },
   {
     id: 'express-supabase',
-    slug: 'express-supabase',
+    slug: 'persistence-with-supabase',
     title: 'Express with Supabase',
     description: 'Transition from in-memory storage to a persistent Postgres database using Supabase',
-    lessons: PERSISTENCE_WITH_SUPABASE_LESSONS,
-    markdownPath: '/data/persistence-with-supabase.md'
+    lessons: PERSISTENCE_WITH_SUPABASE_LESSONS
   },
   {
     id: 'deploy-node-do-console',
-    slug: 'deploy-node-do-console',
+    slug: 'deploy-with-digital-ocean',
     title: 'Deploying Node.js via DigitalOcean Console',
     description: 'Deploy a Node.js application to a Droplet using the browser-based terminal, Git, and PM2',
-    lessons: DEPLOY_WITH_DIGITAL_OCEAN_LESSONS,
-    markdownPath: '/data/deploy-with-digital-ocean.md'
+    lessons: DEPLOY_WITH_DIGITAL_OCEAN_LESSONS
   }
 ];
