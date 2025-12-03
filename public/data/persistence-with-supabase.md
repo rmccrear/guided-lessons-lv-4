@@ -35,7 +35,7 @@ Instead of a variable in your file, your Express server will act as a **Client**
 2. **Create `.env` file:**
    Create a file named `.env` in your root directory. Add your project URL and Key (found in your Supabase Dashboard settings).
 
-```env
+```env:Show Me: Environment Variables
 SUPABASE_URL=https://your-project-url.supabase.co
 SUPABASE_KEY=your-anon-public-key
 ```
