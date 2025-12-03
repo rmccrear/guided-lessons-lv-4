@@ -1,0 +1,38 @@
+name: Sync Markdown to TypeScript
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/data/*.md'
+      - 'data/chapters-constants.ts'
+  pull_request:
+    paths:
+      - 'public/data/*.md'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - run: npm ci
+      
+      - name: Convert markdown to TypeScript and update chapters
+        run: npm run sync-chapters:prod
+      
+      - name: Commit and push changes
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.ts data/chapters-constants.ts
+          git diff --staged --quiet || git commit -m "Auto-sync: Convert markdown to TypeScript"
+          git push

@@ -3,6 +3,18 @@
 ## Overview
 Automate the process of converting markdown lesson files to TypeScript and updating `chapters-constants.ts` to use the TS files instead of markdown paths.
 
+## Current State
+
+✅ **Completed:**
+- Created `scripts/update-chapter-constants.ts` to automate mode switching
+- Added `npm run sync-chapters:dev` - switches to markdown mode (dev)
+- Added `npm run sync-chapters:prod` - switches to TypeScript mode (production)
+- Established convention: markdown filename === frontmatter id
+- Renamed files to match IDs:
+  - `sql-joins-relationships.md`
+  - `express-server-setup.md`
+  - `persistence-with-supabase.md`
+
 ## Current Manual Process
 1. Edit markdown files in `public/data/*.md`
 2. Run `npm run parse-chapter` for each file
@@ -17,31 +29,9 @@ Automate the process of converting markdown lesson files to TypeScript and updat
 - ✅ Works for both local and CI/CD environments
 - ✅ Can be triggered manually if needed
 
-### Alternative: Git Hooks
-- ⚠️ Only runs locally (not for all contributors)
-- ⚠️ Can be bypassed with `--no-verify`
-- ✅ Faster feedback loop
-- ✅ Can catch issues before push
+## Recommended Approach: GitHub Actions
 
-## Recommended Approach: Hybrid Solution
-
-### 1. Pre-commit Hook (Local Development)
-**Purpose:** Catch issues early, provide fast feedback
-
-**Location:** `.husky/pre-commit` or `.git/hooks/pre-commit`
-
-**Actions:**
-- Detect if any `public/data/*.md` files changed
-- Run `npm run parse-chapter` for changed files
-- Stage the generated TS files
-- Optionally: Auto-update `chapters-constants.ts` (or warn if manual update needed)
-
-**Benefits:**
-- Fast feedback during development
-- Prevents committing outdated TS files
-- Can be skipped with `--no-verify` if needed
-
-### 2. GitHub Actions Workflow (CI/CD)
+### GitHub Actions Workflow (CI/CD)
 **Purpose:** Ensure consistency, validate on PR, auto-update on merge
 
 **Location:** `.github/workflows/sync-markdown-to-ts.yml`
@@ -71,45 +61,11 @@ Automate the process of converting markdown lesson files to TypeScript and updat
 - Auto-updates chapter constants
 - Validates changes in PRs
 - Works for all contributors
+- Consistent environment for all builds
 
 ## Implementation Details
 
-### Step 1: Create Pre-commit Hook
-
-**File:** `.husky/pre-commit` or `.git/hooks/pre-commit`
-
-```bash
-#!/bin/sh
-# Get list of changed markdown files
-CHANGED_MD_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '^public/data/.*\.md$')
-
-if [ -z "$CHANGED_MD_FILES" ]; then
-  exit 0
-fi
-
-echo "🔄 Converting markdown files to TypeScript..."
-
-for MD_FILE in $CHANGED_MD_FILES; do
-  # Skip test files
-  if [[ "$MD_FILE" == *"test"* ]]; then
-    continue
-  fi
-  
-  # Determine TS output path
-  BASENAME=$(basename "$MD_FILE" .md)
-  TS_FILE="data/${BASENAME}-lessons.ts"
-  
-  # Convert markdown to TypeScript
-  npm run parse-chapter "$MD_FILE" "$TS_FILE"
-  
-  # Stage the generated TS file
-  git add "$TS_FILE"
-done
-
-echo "✅ Markdown files converted to TypeScript"
-```
-
-### Step 2: Create GitHub Actions Workflow
+### GitHub Actions Workflow
 
 **File:** `.github/workflows/sync-markdown-to-ts.yml`
 
@@ -141,25 +97,8 @@ jobs:
       
       - run: npm ci
       
-      - name: Convert markdown to TypeScript
-        run: |
-          # Find all markdown files (excluding test files)
-          for MD_FILE in public/data/*.md; do
-            if [[ "$MD_FILE" == *"test"* ]]; then
-              continue
-            fi
-            
-            BASENAME=$(basename "$MD_FILE" .md)
-            TS_FILE="data/${BASENAME}-lessons.ts"
-            
-            echo "Converting $MD_FILE to $TS_FILE"
-            npm run parse-chapter "$MD_FILE" "$TS_FILE"
-          done
-      
-      - name: Update chapters-constants.ts
-        run: |
-          # This would need a script to auto-update the imports
-          node scripts/update-chapter-constants.js
+      - name: Convert markdown to TypeScript and update chapters
+        run: npm run sync-chapters:prod
       
       - name: Commit and push changes
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -171,7 +110,7 @@ jobs:
           git push
 ```
 
-### Step 3: Create Script to Update Chapter Constants
+### Update Chapter Constants Script
 
 **File:** `scripts/update-chapter-constants.ts`
 
@@ -189,57 +128,45 @@ jobs:
    - If yes, update chapter to import TS file instead
 4. Write updated file
 
-### Step 4: Add npm Scripts
+### NPM Scripts
 
-**File:** `package.json`
+✅ **COMPLETED** - Scripts added to `package.json`
 
+**Current scripts:**
 ```json
 {
   "scripts": {
-    "sync-md-to-ts": "node scripts/sync-markdown-to-ts.js",
-    "pre-commit": "husky run .husky/pre-commit"
+    "sync-chapters:dev": "tsx scripts/update-chapter-constants.ts dev",
+    "sync-chapters:prod": "tsx scripts/update-chapter-constants.ts production"
   }
 }
 ```
 
-## Alternative: Simpler Approach
-
-### Option A: Pre-push Hook Only
-- Run conversion on pre-push
-- Auto-update chapter constants
-- Commit changes before push
-- Simpler, but requires force-push handling
-
-### Option B: GitHub Actions Only
-- Skip local hooks
-- Let CI handle everything
-- Simpler setup, but slower feedback
+**Original plan:**
+```json
+{
+  "scripts": {
+    "sync-md-to-ts": "node scripts/sync-markdown-to-ts.js"
+  }
+}
+```
 
 ## Implementation Steps
 
-1. **Create pre-commit hook**
-   - Install husky if not already: `npm install --save-dev husky`
-   - Create `.husky/pre-commit` script
-   - Test locally
-
-2. **Create GitHub Actions workflow**
+1. **Create GitHub Actions workflow**
    - Create `.github/workflows/` directory
    - Add `sync-markdown-to-ts.yml`
+   - Configure to run `npm run sync-chapters:prod`
    - Test with a test PR
 
-3. **Create update script**
-   - Create `scripts/update-chapter-constants.ts`
-   - Parse and update `chapters-constants.ts` programmatically
-   - Test manually
-
-4. **Add npm scripts**
+2. **Add npm scripts** ✅ DONE
    - Add convenience scripts to `package.json`
    - Document usage
 
-5. **Testing**
-   - Test pre-commit hook with markdown changes
+3. **Testing**
    - Test GitHub Actions with PR
    - Verify auto-commit works on main branch
+   - Ensure generated files are correct
 
 ## Edge Cases to Handle
 
@@ -259,17 +186,18 @@ jobs:
    - Handle merge conflicts in generated files
    - Regenerate after conflict resolution
 
-## Recommended: Start with GitHub Actions
+## Recommended: GitHub Actions Only
 
 **Why:**
 - More reliable (runs in clean environment)
 - Works for all contributors
-- Can be tested without affecting local setup
-- Can add pre-commit hook later if needed
+- No local setup required
+- Can be tested without affecting local workflow
+- Consistent build environment
 
 **Implementation Order:**
-1. Create GitHub Actions workflow (validation only first)
-2. Add auto-update script
+1. Create GitHub Actions workflow ⬅️ NEXT STEP
+2. Test with validation only first
 3. Enable auto-commit on main branch
-4. Optionally add pre-commit hook for faster local feedback
+4. Monitor and refine as needed
 
