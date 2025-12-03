@@ -457,6 +457,8 @@ WHERE user_id = 'c02111-YOUR-UUID-GOES-HERE';
 
 **User Story:** As User A (The Host), I want to see **every meal** coming to **any of my parties**.
 
+![A database query flow diagram illustrating the Hosting Dashboard challenge. On the left, the auth.users table shows a user with a specific UUID highlighted. An arrow points to the potluck_events table in the center, showing how the query filters events where user_id matches the host's UUID. From the events table, another arrow points to the potluck_meals table on the right, showing the JOIN operation connecting event_id to retrieve all associated meals. The diagram emphasizes the two-table hop: first finding the host's events, then gathering all meals for those events.:Show Me: The Hosting Dashboard Query Flow](assets/sql-join/hosting-dashboard-query-flow-diagram.png)
+
 ### Challenge
 
 Write a query that shows all meals for events hosted by a specific user.
