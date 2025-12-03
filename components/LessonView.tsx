@@ -24,7 +24,14 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
         h2: ({ node, ...props }) => <h2 className="text-2xl font-bold text-white mt-8 mb-4 flex items-center gap-2" {...props} />,
         h3: ({ node, ...props }) => <h3 className="text-xl font-semibold text-indigo-300 mt-6 mb-3" {...props} />,
         h4: ({ node, ...props }) => <h4 className="text-lg font-semibold text-white mt-4 mb-2" {...props} />,
-        p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-gray-300 text-lg" {...props} />,
+        p: ({ node, children, ...props }) => {
+          // Check if paragraph only contains an image (to avoid div-in-p hydration error)
+          const hasOnlyImage = node?.children?.length === 1 && node.children[0].type === 'element' && node.children[0].tagName === 'img';
+          if (hasOnlyImage) {
+            return <>{children}</>;
+          }
+          return <p className="mb-4 leading-relaxed text-gray-300 text-lg" {...props}>{children}</p>;
+        },
         ul: ({ node, ...props }) => <ul className="list-disc pl-6 space-y-2 mb-6 text-gray-300" {...props} />,
         ol: ({ node, ...props }) => <ol className="list-decimal pl-6 space-y-2 mb-6 text-gray-300" {...props} />,
         li: ({ node, ...props }) => <li className="leading-relaxed" {...props} />,

@@ -97,10 +97,8 @@ export function parseChapterSections(
             lesson.type = 'challenge';
         } else if (sectionTitle.toLowerCase().includes('understanding')) {
             lesson.type = 'reading';
-            console.log('✅ Understanding detected:', sectionTitle, '→ type:', lesson.type);
         } else {
             lesson.type = chapterMeta.type as Lesson['type'];
-            console.log('📝 Default type for:', sectionTitle, '→ type:', lesson.type);
         }
         
         return lesson;
