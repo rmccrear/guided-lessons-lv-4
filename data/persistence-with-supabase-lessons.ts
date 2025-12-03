@@ -2,10 +2,10 @@ import { Lesson } from '../types';
 
 export const PERSISTENCE_WITH_SUPABASE_LESSONS: Lesson[] = [
   {
-    id: "persistence-with-supabase-manage-data-from-memory-to-database",
-    title: "Manage Data — From Memory to Database",
+    id: "persistence-with-supabase-understanding-manage-data-from-memory-to-database",
+    title: "Understanding: Manage Data — From Memory to Database",
     description: "Transition from in-memory storage to a persistent Postgres database using Supabase.",
-    type: "exercise",
+    type: "reading",
     content: `
 **User Story:** As a developer, I want to store my application data in a real database so that it survives server restarts and scales with my users.
 

@@ -1,90 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Lesson, Chapter } from '../types';
-import { convertCleanMarkdownToLesson } from './markdown-parser';
-
-/**
- * Split markdown content by ## headers into sections
- */
-function splitIntoSections(markdown: string): { frontmatter: string; sections: string[] } {
-    const frontMatterRegex = /^---\s*([\s\S]*?)\s*---\n/;
-    const frontMatterMatch = markdown.match(frontMatterRegex);
-    
-    let frontmatter = '';
-    let content = markdown;
-    
-    if (frontMatterMatch) {
-        frontmatter = frontMatterMatch[0];
-        content = markdown.slice(frontMatterMatch[0].length);
-    }
-    
-    const sections: string[] = [];
-    const headerRegex = /^## (?!#)/gm;
-    const matches = [...content.matchAll(headerRegex)];
-    
-    if (matches.length === 0) {
-        return { frontmatter, sections: [content] };
-    }
-    
-    for (let i = 0; i < matches.length; i++) {
-        const start = matches[i].index!;
-        const end = i < matches.length - 1 ? matches[i + 1].index! : content.length;
-        sections.push(content.slice(start, end));
-    }
-    
-    return { frontmatter, sections };
-}
-
-/**
- * Extract chapter metadata from frontmatter
- */
-function extractChapterMeta(frontmatter: string) {
-    const getField = (key: string) => frontmatter.match(new RegExp(`${key}:\\s*(.*)`))?.[1]?.trim();
-    return {
-        id: getField('id') || 'unknown',
-        title: getField('title') || 'Untitled Chapter',
-        type: getField('type') || 'exercise'
-    };
-}
-
-/**
- * Generate a lesson ID from section title
- */
-function generateLessonId(sectionTitle: string, chapterId: string, index: number): string {
-    const titleSlug = sectionTitle
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-');
-    return `${chapterId}-${titleSlug}`;
-}
-
-/**
- * Parse markdown file into lessons
- */
-function parseMarkdownToLessons(markdownContent: string): Lesson[] {
-    const { frontmatter, sections } = splitIntoSections(markdownContent);
-    const chapterMeta = extractChapterMeta(frontmatter);
-    
-    return sections.map((section, index) => {
-        const fullSection = frontmatter ? `${frontmatter}\n${section}` : section;
-        const lesson = convertCleanMarkdownToLesson(fullSection);
-        
-        const sectionTitleMatch = section.match(/^## (.+)/);
-        const sectionTitle = sectionTitleMatch ? sectionTitleMatch[1].trim() : lesson.title;
-        
-        // Auto-detect challenge type if title contains "Challenge"
-        let lessonType = chapterMeta.type as 'reading' | 'exercise' | 'challenge' | 'setup';
-        if (sectionTitle.toLowerCase().includes('challenge')) {
-            lessonType = 'challenge';
-        }
-        
-        return {
-            ...lesson,
-            id: generateLessonId(sectionTitle, chapterMeta.id, index),
-            title: sectionTitle,
-            type: lessonType
-        };
-    });
-}
+import { parseChapterSections, splitIntoSections, extractChapterMeta } from './chapter-parser';
 
 /**
  * Custom hook to load and parse markdown file for a chapter
@@ -109,7 +25,12 @@ export function useMarkdownChapter(chapter: Chapter): Chapter {
                 return response.text();
             })
             .then(markdownContent => {
-                const lessons = parseMarkdownToLessons(markdownContent);
+                const { frontmatter, sections } = splitIntoSections(markdownContent);
+                const chapterMeta = extractChapterMeta(frontmatter);
+                const lessons = parseChapterSections(sections, frontmatter, {
+                    chapterId: chapterMeta.id,
+                    type: chapterMeta.type
+                });
                 setParsedChapter({
                     ...chapter,
                     lessons

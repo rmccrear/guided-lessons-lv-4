@@ -7,7 +7,7 @@ description: Transition from in-memory storage to a persistent Postgres database
 
 # Persistence with Supabase
 
-## Manage Data — From Memory to Database
+## Understanding: Manage Data — From Memory to Database CHANGE
 
 **User Story:** As a developer, I want to store my application data in a real database so that it survives server restarts and scales with my users.
 
