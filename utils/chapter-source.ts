@@ -13,7 +13,9 @@ async function parseMarkdownIfAvailable(chapter: Chapter): Promise<Chapter> {
   if (!chapter.markdownPath) return chapter;
 
   try {
-    const response = await fetch(chapter.markdownPath);
+    const base = (import.meta as any).env?.BASE_URL || '/';
+    const mdPath = base + chapter.markdownPath.replace(/^\//, '');
+    const response = await fetch(mdPath);
     if (!response.ok) throw new Error(`Failed to load markdown: ${response.statusText}`);
     const markdownContent = await response.text();
     const { frontmatter, sections } = splitIntoSections(markdownContent);

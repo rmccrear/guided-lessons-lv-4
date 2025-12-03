@@ -13,7 +13,9 @@ async function parseChapterMarkdown(chapter: Chapter): Promise<Chapter> {
     console.log('🔄 Parsing markdown for chapter:', chapter.id, 'from', chapter.markdownPath);
 
     try {
-        const response = await fetch(chapter.markdownPath);
+        const base = (import.meta as any).env?.BASE_URL || '/';
+        const mdPath = base + chapter.markdownPath.replace(/^\//, '');
+        const response = await fetch(mdPath);
         if (!response.ok) {
             throw new Error(`Failed to load markdown: ${response.statusText}`);
         }
