@@ -2,8 +2,8 @@ import { Lesson } from '../types';
 
 export const PERSISTENCE_WITH_SUPABASE_LESSONS: Lesson[] = [
   {
-    id: "persistence-with-supabase-understanding-manage-data-from-memory-to-database",
-    title: "Understanding: Manage Data — From Memory to Database",
+    id: "persistence-with-supabase-understanding-manage-data-from-memory-to-database-change",
+    title: "Understanding: Manage Data — From Memory to Database CHANGE",
     description: "Transition from in-memory storage to a persistent Postgres database using Supabase.",
     type: "reading",
     content: `
