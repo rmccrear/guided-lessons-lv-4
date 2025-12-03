@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "predev": "node -e \"if (process.env.CODESPACES === 'true' && process.env.GITHUB_TOKEN) { console.log('\\n\\x1b[33m⚠️  Security Warning:\\x1b[0m Do not share your dev server URL.\\nYour GITHUB_TOKEN is embedded in the build for AI processing.\\n'); }\"",
-    "dev": "vite",
+    "dev": "VITE_APP_USE_MARKDOWN=true vite",
+    "dev-test": "VITE_APP_USE_MARKDOWN=false vite",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
@@ -13,6 +14,7 @@
     "parse-lesson": "tsx scripts/parse-lesson.ts",
     "parse-chapter": "tsx scripts/parse-chapter.ts",
     "parse-all-chapters": "tsx scripts/parse-all-chapters.ts",
+    "create-chapter": "tsx scripts/create-chapter.ts",
     "sync-chapters": "tsx scripts/update-chapter-constants.ts",
     "sync-chapters:dev": "tsx scripts/update-chapter-constants.ts dev",
     "sync-chapters:prod": "npm run parse-all-chapters && tsx scripts/update-chapter-constants.ts production"

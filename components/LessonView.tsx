@@ -112,6 +112,11 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
 const CodeSnippetItem: React.FC<{ snippet: CodeSnippet }> = ({ snippet }) => {
   const [isOpen, setIsOpen] = useState(!snippet.summary);
 
+  // Clean summary to avoid duplicated "Show Me" prefix
+  const cleanSummary = snippet.summary
+    ? String(snippet.summary).replace(/^\s*show\s*me:\s*/i, '').trim()
+    : '';
+
   const toggle = () => {
     if (snippet.summary) {
       setIsOpen(!isOpen);
@@ -132,7 +137,7 @@ const CodeSnippetItem: React.FC<{ snippet: CodeSnippet }> = ({ snippet }) => {
         >
           <div className="flex items-center gap-2 font-semibold">
             <Eye size={20} className="group-hover:text-yellow-300" />
-            <span>Show Me: {snippet.summary}</span>
+            <span>Show Me: {cleanSummary}</span>
           </div>
           {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
         </button>
@@ -177,6 +182,9 @@ interface CollapsibleImageItemProps {
 const CollapsibleImageItem: React.FC<CollapsibleImageItemProps> = ({ src, alt, summary }) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Clean summary to avoid duplicated "Show Me" prefix from alt text
+  const cleanSummary = summary ? String(summary).replace(/^\s*show\s*me:\s*/i, '').trim() : '';
+
   const toggle = () => {
     setIsOpen(!isOpen);
   };
@@ -190,7 +198,7 @@ const CollapsibleImageItem: React.FC<CollapsibleImageItemProps> = ({ src, alt, s
       >
         <div className="flex items-center gap-2 font-semibold">
           <Image size={20} className="group-hover:text-yellow-300" />
-          <span>Show Me: {summary}</span>
+          <span>Show Me: {cleanSummary}</span>
         </div>
         {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>

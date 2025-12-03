@@ -12,6 +12,7 @@ const MD_FILE_TO_CHAPTER_ID: Record<string, string> = {
   'sql-joins-relationships.md': 'sql-joins',
   'express-server-setup.md': 'express-rest-server-in-memory',
   'persistence-with-supabase.md': 'express-supabase',
+  'deploy-with-digital-ocean.md': 'deploy-node-do-console',
 };
 
 /**

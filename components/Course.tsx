@@ -15,7 +15,9 @@ export interface CourseProps {
  */
 export function Course({ chapters, onOpenChapter }: CourseProps) {
   const rawList = useMemo(() => chapters ?? CHAPTERS, [chapters]);
-  const { chapters: list, loading } = useAllChapters(rawList);
+  const envVal = import.meta.env.VITE_APP_USE_MARKDOWN ?? '';
+  const useMarkdown = ['true', '1', 'yes'].includes(String(envVal).toLowerCase());
+  const { chapters: list, loading } = useMarkdown ? useAllChapters(rawList) : { chapters: rawList, loading: false } as any;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (

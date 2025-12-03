@@ -21,6 +21,148 @@ In this lesson, we are skipping the code writing. You will take an app you have 
 - Configuring UFW (Uncomplicated Firewall)
 - Managing processes with PM2
 
+## Sign Up & Create Your First Droplet
+
+Before you can deploy code, you need a server to host it. In the cloud world, we don't buy physical hardware; we rent virtualized slices of a massive server farm. DigitalOcean calls these virtual machines **Droplets**.
+
+In this lesson, we will create the infrastructure required for the rest of this chapter.
+
+### Overview
+
+**What you'll learn:**
+
+  * Creating a DigitalOcean Cloud account
+  * Navigating the Project dashboard
+  * Configuring a Virtual Machine (OS, Region, Size)
+  * Setting up Root Authentication
+
+### Account Setup & Project Creation
+
+**Goal:** Establish your account and create a workspace for your resources.
+
+**User Story:** As a new Cloud User, I need to create an organization so that I can group my resources and manage billing effectively.
+
+#### Instructions
+
+1.  **Sign Up**
+
+      * Go to DigitalOcean.com and sign up.
+      * *Note: You may need to enter a payment method to verify your identity, even if you are using free trial credits.*
+      * You may use your [$200 of free credits with GitHub for Education](https://www.digitalocean.com/github-students)
+
+2.  **Create a Project**
+
+      * Once logged in, look at the left sidebar.
+      * Click **"+ New Project"**.
+      * Name your project **"Node-Learning"**.
+      * For the description, select "Just trying out DigitalOcean" or "Educational purposes".
+      * Click **Create Project**.
+
+## Provisioning the Droplet
+
+**Goal:** Configure the hardware and software specifications for your server.
+
+**User Story:** As a System Administrator, I want to select the most cost-effective and performant region and operating system for my application.
+
+### Instructions
+
+1.  **Initiate Creation**
+
+      * Inside your new project, locate the large green button labeled **"Create"** at the top.
+      * Select **"Droplets"** from the dropdown menu.
+
+2.  **Choose Region**
+
+      * Select the datacenter region closest to you (or your potential users).
+      * *Example: If you are near New York, choose NYC1 or NYC3.*
+
+3.  **Choose an Image (Operating System)**
+
+      * Select the **OS** tab.
+      * Choose **Ubuntu**.
+      * Select the latest **LTS** (Long Term Support) version (e.g., 24.04 LTS or 22.04 LTS).
+      * *Why? The next lesson uses `apt` commands, which are specific to Debian/Ubuntu systems.*
+
+4.  **Choose Size (CPU & RAM)**
+
+      * Select **Basic**.
+      * Under "Disk Type", select **Regular SSD** (usually on the left).
+      * Select the cheapest option (usually $4/mo or $6/mo).
+      * *Note: This is plenty of power for the simple Node app we will deploy.*
+      * *Note: not all regions have all options available. If you do not see the cheapest option available in your region, select another region like New York or San Francisco.*
+
+## Authentication & Finalize
+
+**Goal:** Secure the server and launch it.
+
+**User Story:** As a Security Engineer, I need to set strong credentials so that unauthorized users cannot access the server.
+
+### Instructions
+
+1.  **Authentication Method**
+
+      * Scroll down to the **Authentication Method** section.
+      * Select **Password**.
+      * Create a highly secure root password.
+      * *Important: Save this password in a password manager. You will need it if the Web Console fails.*
+
+2.  **Hostname**
+
+      * Scroll to "Finalize and Create".
+      * Change the default hostname (which looks like `ubuntu-s-1vcpu-1gb-nyc1`) to something simple, like: `node-demo-server`.
+
+3.  **Create Droplet**
+
+      * Click the large green **Create Droplet** button at the bottom.
+      * You will be redirected to the dashboard. Watch the blue progress bar fill up.
+
+## Challenge: Locate Your Public IP
+
+**Goal:** Identify the address needed to connect to your server.
+
+**User Story:** As a Developer, I need to know the public IP address of my server so I can point my browser and terminal commands to the right place.
+
+### The Task
+
+Once the progress bar finishes and the Droplet is green/active, you need to find its **Public IP Address**. You will need this specifically for the next lesson.
+
+### Instructions
+
+1.  Wait for the Droplet creation to finish.
+2.  Hover over the IP address displayed next to your Droplet name.
+3.  Click "Copy".
+
+### 💡 Code Hints
+
+Where is it located?
+
+```text:show Me: Location
+It is usually right next to the Droplet name in the "Resources" list. 
+It looks like four sets of numbers separated by dots (e.g., 147.12.33.201).
+```
+
+### 🔍 Diving Deeper
+
+**What is a Droplet?**
+"Droplet" is simply DigitalOcean's marketing term for a VPS (Virtual Private Server). It acts exactly like a standalone physical computer, but it shares hardware resources with other Droplets in a massive datacenter.
+
+### Lesson Complete\! 🎉
+
+**Congratulations\!** You are now the owner of a live server running Ubuntu. It is currently sitting idle, waiting for commands.
+
+### Summary
+
+You verified the following skills:
+
+  * **Cloud Provisioning:** creating a virtual server.
+  * **OS Selection:** Choosing Ubuntu LTS.
+  * **Resource Sizing:** Selecting an appropriate CPU/RAM tier.
+
+### Next Steps
+
+Now that the server is running, let's log into it\! In the next lesson, we will bypass SSH keys and use the browser console to deploy your app.
+
+
 ## The Environment Setup
 
 **Goal:** Log in to the server via the browser and install the Node.js runtime.

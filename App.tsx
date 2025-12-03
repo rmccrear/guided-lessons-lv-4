@@ -22,7 +22,10 @@ function LessonShell() {
     return CHAPTERS.find(ch => ch.slug === params.chapterSlug) || CHAPTERS[0];
   }, [params.chapterSlug]);
   
-  const currentChapter = useMarkdownChapter(rawChapter);
+  const envVal = import.meta.env.VITE_APP_USE_MARKDOWN ?? '';
+  const useMarkdown = ['true', '1', 'yes'].includes(String(envVal).toLowerCase());
+
+  const currentChapter = useMarkdown ? useMarkdownChapter(rawChapter) : rawChapter;
 
   // Find the current lesson within the chapter
   const currentLesson = useMemo(() => {
