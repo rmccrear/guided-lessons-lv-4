@@ -12,9 +12,10 @@
     "test:ui": "vitest --ui",
     "parse-lesson": "tsx scripts/parse-lesson.ts",
     "parse-chapter": "tsx scripts/parse-chapter.ts",
+    "parse-all-chapters": "tsx scripts/parse-all-chapters.ts",
     "sync-chapters": "tsx scripts/update-chapter-constants.ts",
     "sync-chapters:dev": "tsx scripts/update-chapter-constants.ts dev",
-    "sync-chapters:prod": "tsx scripts/update-chapter-constants.ts production"
+    "sync-chapters:prod": "npm run parse-all-chapters && tsx scripts/update-chapter-constants.ts production"
   },
   "dependencies": {
     "@azure-rest/ai-inference": "^1.0.0-beta.6",

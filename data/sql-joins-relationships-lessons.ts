@@ -183,12 +183,7 @@ To get this, we had to join three tables: \`movie\` -> \`casting\` -> \`actor\`.
 
 ### 💡 Code Hints
 
-\`\`\`sql:Show Me: Answer for #7
-SELECT name
-  FROM movie JOIN casting ON (movie.id = casting.movieid)
-             JOIN actor   ON (casting.actorid = actor.id)
-  WHERE title = 'Alien'
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -221,11 +216,7 @@ We have \`potluck_meals\`. We are about to create \`potluck_events\`.
 1.  Does one event have many meals?
 2.  Does one meal have many events?
 
-\`\`\`text:Show Me: The Answer
-It is a One-to-Many relationship.
-ONE Event has MANY Meals.
-ONE Meal belongs to ONE Event.
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -292,10 +283,7 @@ We need to tell the **Meals** which **Event** they belong to. Since a Meal belon
 
 Since the \`event_id\` is already inside the \`potluck_meals\` table, we do **not** need a JOIN for this specific question.
 
-\`\`\`sql:Show Me: The Query
-SELECT * FROM potluck_meals 
-WHERE event_id = 1;
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -326,11 +314,7 @@ We must JOIN to ask questions about the Event's **name** or **date**.
 ### Challenge
 Write a query to find all meals for the event named 'Summer BBQ'.
 
-\`\`\`sql:Show Me: The Solution
-SELECT potluck_meals.* FROM potluck_meals 
-JOIN potluck_events ON potluck_meals.event_id = potluck_events.id
-WHERE potluck_events.name = 'Summer BBQ';
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -375,11 +359,7 @@ We have two relationships to model:
 
 **Question:** Which tables need a \`user_id\` column?
 
-\`\`\`text:Show Me: The Answer
-Both of them!
-1. potluck_events needs a user_id (The Host)
-2. potluck_meals needs a user_id (The Cook)
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -428,11 +408,7 @@ Both of them!
 
 Do we need a JOIN? No. The \`user_id\` is right there on the event table.
 
-\`\`\`sql:Show Me: The Query
--- Replace the ID with one from your Auth tab
-SELECT * FROM potluck_events 
-WHERE user_id = 'c02111-YOUR-UUID-GOES-HERE';
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -469,12 +445,7 @@ Write a query that shows all meals for events hosted by a specific user.
 * I need the food info (so I must SELECT from \`potluck_meals\`).
 * This requires a JOIN.
 
-\`\`\`sql:Show Me: The Host Query
-SELECT potluck_meals.meal_name, potluck_meals.guest_name
-FROM potluck_meals
-JOIN potluck_events ON potluck_meals.event_id = potluck_events.id
-WHERE potluck_events.user_id = 'c02111-HOST-UUID-HERE';
-\`\`\`
+
 `
     ,codeSnippets: [
       {

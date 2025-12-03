@@ -44,15 +44,7 @@ Before diving into the concepts, let's set up your Express project:
 
 Modify your \`package.json\` to include \`"type": "module"\` and the start scripts below.
 
-\`\`\`json:Show Me: npm scripts with nodemon and node
-{
-  "type": "module",
-  "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
-  }
-}
-\`\`\`
+
 
 ### Understanding the scripts
 
@@ -96,21 +88,7 @@ Modify your \`package.json\` to include \`"type": "module"\` and the start scrip
    - Create a \`src\` directory.
    - Create \`src/index.js\` as your main server file.
 
-\`\`\`javascript:Show Me: Starter Express Server Code
-// src/index.js
-import express from 'express';
 
-const app = express();
-const port = 3000;
-
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-app.listen(port, () => {
-  console.log(\`Server listening on port \${port}\`);
-});
-\`\`\`
 
 **See:** [Express Hello World Example](https://expressjs.com/en/starter/hello-world.html) for a minimal Express app example.
 
@@ -226,12 +204,7 @@ In your \`package.json\`, you have defined two ways to run the server:
 
 Update your root route to use \`res.send()\` with an HTML snippet.
 
-\`\`\`javascript:show Me: Serving HTML
-// src/index.js
-app.get('/', (req, res) => {
-  res.send('<h1>Hello Express!</h1><p>Your server is working!</p>');
-});
-\`\`\`
+
 
 ### Digging Deeper: Template Literals
 
@@ -293,18 +266,7 @@ Use the built-in middleware \`express.static\` to expose a directory of files.
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Static Assets Middleware
-import express from 'express';
-const app = express();
 
-// Files in public/ will be accessible at the root URL
-app.use(express.static('public'));
-
-const port = 3000;
-app.listen(port, () => {
-  console.log(\`Server listening on port \${port}\`);
-});
-\`\`\`
 
 **Testing:**
 Visit \`http://localhost:3000/styles.css\` in your browser.
@@ -379,15 +341,7 @@ Create a \`GET /happy-birthday\` route that returns a JSON object using \`res.js
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Happy Birthday JSON Route
-app.get('/happy-birthday', (req, res) => {
-  res.json({
-    name: 'Alice',
-    age: 25,
-    greeting: 'Happy Birthday! 🎉'
-  });
-});
-\`\`\`
+
 
 **Verify:** Check in Postman that the \`Content-Type\` header is \`application/json\`.
 `
@@ -424,18 +378,7 @@ app.get('/happy-birthday', (req, res) => {
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Nested JSON Example
-app.get('/favorite', (req, res) => {
-  res.json({
-    pokemon: "Bulbasaur",
-    stats: {
-      height: 0.7,
-      weight: 6.9
-    },
-    attacks: ["Vine Whip", "Seed Bomb"]
-  });
-});
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -494,15 +437,7 @@ app.get('/favorite', (req, res) => {
 
 ### 💡 Hints
 
-\`\`\`javascript:show Me: The Echo Route
-// Don't forget middleware!
-app.use(express.json());
 
-app.post('/echo', (req, res) => {
-  console.log('Received:', req.body);
-  res.json(req.body);
-});
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -563,19 +498,7 @@ The next series of levels introduces **CRUD** (Create, Read, Update, Delete) usi
 
 We will use a variable declared at the top level of your file to store data. This data persists as long as the server is running but resets when the server restarts.
 
-\`\`\`javascript:show Me: Module-Level Global Example
-import express from 'express';
-const app = express();
 
-// 1. Define storage outside the routes
-const items = [];
-
-app.post('/items', (req, res) => {
-  // 2. Modify storage inside the routes
-  items.push(req.body);
-  res.status(201).json(req.body);
-});
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -615,15 +538,7 @@ app.post('/items', (req, res) => {
 
 ### 💡 Code Hints
 
-\`\`\`javascript:show Me: Sample Data Structure
-const sampleProduct = {
-  id: 1,
-  title: 'Notebook',
-  price: 4.99,
-  tags: ['stationery', 'paper'],
-  inStock: true
-};
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -659,14 +574,7 @@ const sampleProduct = {
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Seed Data Array
-const booksStorage = [
-  { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald' },
-  { id: 2, title: '1984', author: 'George Orwell' }
-];
 
-console.log('Seeded items:', booksStorage);
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -715,19 +623,7 @@ console.log('Seeded items:', booksStorage);
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: POST Route
-// Ensure app.use(express.json()) is active!
 
-app.post('/books', (req, res) => {
-  const newBook = req.body;
-  
-  // Add to storage
-  booksStorage.push(newBook);
-  
-  // Return created item with 201 Created status
-  res.status(201).json(newBook);
-});
-\`\`\`
 
 ### Diving Deeper: Middleware
 
@@ -771,11 +667,7 @@ app.post('/books', (req, res) => {
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Validation Check
-if (!req.body?.title) {
-  return res.status(400).json({ error: 'Title is required' });
-}
-\`\`\`
+
 
 **Note:** The \`?.\` (optional chaining) operator safely checks for \`title\` even if \`req.body\` itself is null or undefined.
 `
@@ -808,18 +700,7 @@ if (!req.body?.title) {
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Generate Unique ID
-import { randomUUID } from 'node:crypto';
 
-// Inside your POST route
-const newBook = { 
-  ...req.body, 
-  id: randomUUID() 
-};
-
-booksStorage.push(newBook);
-res.status(201).json(newBook);
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -858,17 +739,7 @@ res.status(201).json(newBook);
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Find Item by ID
-app.get('/books/:id', (req, res) => {
-  const book = booksStorage.find((entry) => entry.id === req.params.id);
-  
-  if (!book) {
-    return res.status(404).json({ error: 'Book not found' });
-  }
-  
-  res.json(book);
-});
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -906,20 +777,7 @@ app.get('/books/:id', (req, res) => {
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Delete with Filter Pattern
-app.delete('/books/:id', (req, res) => {
-  const book = booksStorage.find((entry) => entry.id === req.params.id);
-  
-  if (!book) {
-    return res.status(404).json({ error: 'Book not found' });
-  }
 
-  // Filter out the item where the ID matches
-  booksStorage = booksStorage.filter((entry) => entry.id !== req.params.id);
-  
-  res.status(200).json({ message: 'Book deleted successfully' });
-});
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -955,9 +813,7 @@ app.delete('/books/:id', (req, res) => {
 
 Add a \`console.log\` statement to the top of your routes to print the method and body.
 
-\`\`\`javascript:show Me: Request Logging
-console.log(\`POST /books\`, req.body);
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -985,36 +841,9 @@ console.log(\`POST /books\`, req.body);
 
 ### 💡 Hints
 
-\`\`\`javascript:show Me: Read Data on Startup
-import { readFileSync } from 'node:fs';
 
-const DATA_PATH = './books.json';
-let booksStorage = [];
 
-try {
-  // Try to read the file if it exists
-  const fileData = readFileSync(DATA_PATH, 'utf-8');
-  booksStorage = JSON.parse(fileData);
-} catch (error) {
-  // If file doesn't exist, start with empty array
-  booksStorage = [];
-}
-\`\`\`
 
-\`\`\`javascript:show Me: Write Data Helper
-import { writeFileSync } from 'node:fs';
-
-function saveBooks() {
-  writeFileSync(DATA_PATH, JSON.stringify(booksStorage, null, 2));
-}
-
-// Example usage in route
-app.post('/books', (req, res) => {
-  booksStorage.push(req.body);
-  saveBooks(); // <--- Save to disk immediately
-  res.status(201).json(req.body);
-});
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -1089,13 +918,7 @@ app.post('/books', (req, res) => {
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Consistent Error Object
-// Bad ❌
-res.status(404).send("Not found");
 
-// Good ✅
-res.status(404).json({ error: "Book with that ID was not found." });
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -1144,33 +967,9 @@ res.status(404).json({ error: "Book with that ID was not found." });
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Comprehensive Validation
-app.post('/items', (req, res) => {
-  // 1. Check existence
-  if (!req.body?.title) {
-    return res.status(400).json({ error: 'Title is required' });
-  }
-  
-  // 2. Check types
-  if (typeof req.body.price !== 'number' || req.body.price < 0) {
-    return res.status(400).json({ error: 'Price must be a positive number' });
-  }
-  
-  // 3. Success logic
-  const newItem = { ...req.body, id: randomUUID() };
-  itemsStorage.push(newItem);
-  res.status(201).json(newItem);
-});
-\`\`\`
 
-\`\`\`javascript:show Me: Centralized Error Helper
-function sendError(res, statusCode, message) {
-  return res.status(statusCode).json({ error: message });
-}
 
-// Usage:
-// return sendError(res, 400, 'Title is required');
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -1226,27 +1025,9 @@ function sendError(res, statusCode, message) {
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Exporting App (app.js)
-// src/app.js
-import express from 'express';
-const app = express();
 
-app.use(express.json());
-// ... routes ...
 
-export default app;
-\`\`\`
 
-\`\`\`javascript:show Me: Server Entry Point (index.js)
-// src/index.js
-import app from './app.js';
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(\`Server listening on port \${PORT}\`);
-});
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -1297,20 +1078,7 @@ app.listen(PORT, () => {
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Basic Test Setup
-import { describe, it, expect } from 'vitest';
-import request from 'supertest';
-import app from '../../src/app.js'; // Import the app, not index.js
 
-describe('Server Routes', () => {
-  it('serves HTML from root route', async () => {
-    // Supertest accepts the app object directly
-    const res = await request(app).get('/');
-    expect(res.status).toBe(200);
-    expect(res.text).toContain('Hello');
-  });
-});
-\`\`\`
 `
     ,codeSnippets: [
       {
@@ -1346,14 +1114,7 @@ describe('Server Routes', () => {
 
 Add a test case for your \`/happy-birthday\` route.
 
-\`\`\`javascript:show Me: JSON Route Test
-it('returns JSON from Happy Birthday route', async () => {
-  const res = await request(app).get('/happy-birthday');
-  expect(res.status).toBe(200);
-  expect(res.body).toHaveProperty('greeting');
-  expect(res.headers['content-type']).toMatch(/json/);
-});
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -1383,13 +1144,7 @@ it('returns JSON from Happy Birthday route', async () => {
 
 Test your main resource route (e.g., \`/books\`).
 
-\`\`\`javascript:show Me: GET Array Test
-it('returns seeded items array', async () => {
-  const res = await request(app).get('/books');
-  expect(res.status).toBe(200);
-  expect(Array.isArray(res.body)).toBe(true);
-});
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -1418,16 +1173,7 @@ it('returns seeded items array', async () => {
 
 Test the creation flow. Send data and verify the response contains the new ID.
 
-\`\`\`javascript:show Me: POST Test
-it('creates a new item', async () => {
-  const response = await request(app)
-    .post('/books')
-    .send({ title: 'Test Book', author: 'QA Team' });
-    
-  expect(response.status).toBe(201);
-  expect(response.body.id).toBeDefined();
-});
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -1459,14 +1205,7 @@ it('creates a new item', async () => {
 
 Add a coverage script to your \`package.json\`.
 
-\`\`\`json:show Me: Coverage Script
-{
-  "scripts": {
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage"
-  }
-}
-\`\`\`
+
 `
     ,codeSnippets: [
       {
@@ -1547,12 +1286,7 @@ Write three new tests:
 
 <!-- end list -->
 
-\`\`\`javascript:show Me: Render Port Config
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(\`Server running on port \${PORT}\`);
-});
-\`\`\`
+
 `
     ,codeSnippets: [
       {
