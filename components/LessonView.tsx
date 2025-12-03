@@ -63,6 +63,7 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
             const [, imageAlt, summary] = showMeMatch;
             return (
               <CollapsibleImageItem
+                key={`img-${src}-${summary}`}
                 src={src || ''}
                 alt={imageAlt.trim()}
                 summary={summary.trim()}
@@ -243,7 +244,10 @@ export const LessonView: React.FC<LessonViewProps> = ({
       {lesson.codeSnippets && lesson.codeSnippets.length > 0 && (
         <div className="space-y-4">
           {lesson.codeSnippets.map((snippet, idx) => (
-            <CodeSnippetItem key={idx} snippet={snippet} />
+            <CodeSnippetItem 
+              key={`${lesson.id}-snippet-${idx}-${snippet.language}-${snippet.summary || 'visible'}`} 
+              snippet={snippet} 
+            />
           ))}
         </div>
       )}

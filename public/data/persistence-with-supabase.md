@@ -257,3 +257,134 @@ if (!req.body.title || !req.body.author) {
   return res.status(400).json({ error: 'Title and Author are required' });
 }
 ```
+
+## Challenge: Enable CORS and Build a React Consumer ⚡
+
+**User Story:** As a frontend developer, I want to fetch data from my Express API in a React application so that I can display it in a modern web interface.
+
+### The Problem
+
+By default, browsers block requests from one origin (e.g., `http://localhost:5173`) to another (e.g., `http://localhost:3000`) for security reasons. This is called **CORS** (Cross-Origin Resource Sharing).
+
+### Part 1: Enable CORS in Express
+
+**Instructions:**
+
+1. Install the CORS middleware: `npm install cors`
+2. Import and configure CORS in your Express server
+3. Test your API endpoints with Postman or your browser
+
+```javascript:Show Me: CORS Configuration
+import cors from 'cors';
+
+// Allow requests from your React app
+app.use(cors({
+  origin: 'http://localhost:5173', // Your React dev server
+  methods: ['GET', 'POST', 'DELETE'],
+  credentials: true
+}));
+
+// For development, you can also use:
+// app.use(cors()); // Allows all origins (not recommended for production!)
+```
+
+### Part 2: Create a Simple React App
+
+**Instructions:**
+
+1. **Create a new React app** in a separate directory:
+   ```bash
+   npm create vite@latest books-client -- --template react
+   cd books-client
+   npm install
+   ```
+
+2. **Create a component** to fetch and display books:
+   - Use `fetch()` or `axios` to GET data from your API
+   - Display the list of books
+   - Add a simple form to POST new books
+
+3. **Connect to your API:**
+   - Make sure your Express server is running on `http://localhost:3000`
+   - Make sure your React app is running on `http://localhost:5173`
+   - Test fetching data from `/books`
+
+```javascript:Show Me: React Component Example Starter Code (GET one by ID)
+import { useState, useEffect } from 'react';
+
+function BookDetails({ id }) {
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/books/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        // data handling
+      })
+      .catch((err) => {
+        // error handling
+      });
+  }, [id]);
+
+  return (
+    <div>
+      Hello world
+    </div>
+  );
+}
+
+// usage: <BookDetails id={2} />
+
+export default BookDetails;
+```
+
+```javascript:Show Me: React Component Example Full (GET one by ID)
+import { useState, useEffect } from 'react';
+
+function BookDetails({ id }) {
+  const [book, setBook] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/books/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setBook(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching book:', err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+  if (!book) return <div>No book found.</div>;
+
+  return (
+    <div>
+      <h1>{book.title}</h1>
+      <p>
+        <strong>Author:</strong> {book.author}
+      </p>
+      <p>
+        <strong>Price:</strong> ${book.price}
+      </p>
+      <p>
+        <strong>ID:</strong> {book.id}
+      </p>
+    </div>
+  );
+}
+
+// usage: <BookDetails id={2} />
+
+export default BookDetails;
+```
+
+### 💡 Stretch Goals
+
+- Add a form to create new books (POST request)
+- Add delete buttons for each book (DELETE request)
+- Add error handling and user feedback
+- Style your app with Tailwind CSS or another styling solution
+- Deploy both the Express API and React app
