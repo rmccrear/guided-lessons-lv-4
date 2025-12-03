@@ -209,7 +209,7 @@ Now that the server is running, let's log into it\! In the next lesson, we will 
 
 ### How They Work Together
 
-![alt:Show Me: Full-Stack Architecture Diagram showing React frontend on port 5173 making HTTP requests (GET, POST, PUT, DELETE) to Express API on port 3000, which connects to Supabase/Postgres database. Arrows show request flow from browser through CORS-enabled API to database and back.](/data/images/full-stack-architecture-diagram.png)
+![alt:Show Me: Full-Stack Architecture Diagram showing React frontend on port 5173 making HTTP requests (GET, POST, PUT, DELETE) to Express API on port 3000, which connects to Supabase/Postgres database. Arrows show request flow from browser through CORS-enabled API to database and back.](./data/images/full-stack-architecture-diagram.png)
 
 ### Instructions
 

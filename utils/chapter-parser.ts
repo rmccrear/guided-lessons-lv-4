@@ -5,21 +5,17 @@ import { convertCleanMarkdownToLesson } from './markdown-parser';
  * Split markdown content by ## headers into sections
  */
 export function splitIntoSections(markdown: string): { frontmatter: string; sections: string[] } {
-    // Prefix base path for asset links when deploying under a subfolder (GitHub Pages)
-    const base = (import.meta as any).env?.BASE_URL || '/';
-    const prefixed = markdown
-        .replace(/\]\(\/(data|assets)\//g, `](${base}$1/`);
 
     // Extract frontmatter if present
     const frontMatterRegex = /^---\s*([\s\S]*?)\s*---\n/;
-    const frontMatterMatch = prefixed.match(frontMatterRegex);
+    const frontMatterMatch = markdown.match(frontMatterRegex);
     
     let frontmatter = '';
-    let content = prefixed;
+    let content = markdown;
     
     if (frontMatterMatch) {
         frontmatter = frontMatterMatch[0];
-        content = prefixed.slice(frontMatterMatch[0].length);
+        content = markdown.slice(frontMatterMatch[0].length);
     }
     
     // Split by ## headers (but not ###)
