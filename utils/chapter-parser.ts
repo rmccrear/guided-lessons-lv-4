@@ -8,8 +8,7 @@ export function splitIntoSections(markdown: string): { frontmatter: string; sect
     // Prefix base path for asset links when deploying under a subfolder (GitHub Pages)
     const base = (import.meta as any).env?.BASE_URL || '/';
     const prefixed = markdown
-        .replace(/\]\(\/data\//g, `](${base}data/`)
-        .replace(/\]\(\/assets\//g, `](${base}assets/`);
+        .replace(/\]\(\/(data|assets)\//g, `](${base}$1/`);
 
     // Extract frontmatter if present
     const frontMatterRegex = /^---\s*([\s\S]*?)\s*---\n/;
