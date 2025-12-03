@@ -15,6 +15,7 @@ export const CHAPTERS: Chapter[] = [
     title: 'SQL Joins',
     description: 'Master Foreign Keys and JOINs by building a complete event management schema',
     lessons: [],
+    lessons: [],
     markdownPath: '/data/sql-joins-relationships.md'
   },
   {
@@ -22,6 +23,7 @@ export const CHAPTERS: Chapter[] = [
     slug: 'express-rest-server-in-memory',
     title: 'Express REST Server (In Memory)',
     description: 'Build a complete REST API with Express, from setup to in-memory data management',
+    lessons: [],
     lessons: [],
     markdownPath: '/data/express-server-setup.md'
   },
@@ -31,6 +33,15 @@ export const CHAPTERS: Chapter[] = [
     title: 'Express with Supabase',
     description: 'Transition from in-memory storage to a persistent Postgres database using Supabase',
     lessons: [],
+    lessons: [],
     markdownPath: '/data/persistence-with-supabase.md'
+  },
+  {
+    id: 'deploy-node-do-console',
+    slug: 'deploy-node-do-console',
+    title: 'Deploying Node.js via DigitalOcean Console',
+    description: 'Deploy a Node.js application to a Droplet using the browser-based terminal, Git, and PM2',
+    lessons: [],
+    markdownPath: '/data/deploy-with-digital-ocean.md'
   }
 ];
