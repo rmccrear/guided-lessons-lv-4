@@ -113,18 +113,13 @@ app.use(express.json());
 
 1. Add a `GET` route.
 2. Use `await supabase.from('your_table').select('*')`.
-3. Handle errors: If the database fails, return a `500`.
-4. Return `data` with status `200`.
+3. Return `data` with status `200`.
 
 ```javascript:Show Me: GET with Supabase
 app.get('/books', async (req, res) => {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('books')
     .select('*');
-
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
 
   res.json(data);
 });
@@ -143,37 +138,13 @@ app.get('/books', async (req, res) => {
 
 ```javascript:Show Me: POST with Supabase
 app.post('/books', async (req, res) => {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('books')
     .insert(req.body)
     .select(); // Returns the created record
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
-
   // Supabase returns an array, we want the single object
   res.status(201).json(data[0]);
-});
-```
-
-## Enforce Basic Validation
-
-**User Story:** As a developer, I want to validate data *before* sending it to the database to save bandwidth and ensure data integrity.
-
-### Instructions
-
-1. Check if required fields are present in `req.body`.
-2. If data is missing, short-circuit the function and return `400` *before* calling Supabase.
-
-```javascript:Show Me: Validation Check
-app.post('/books', async (req, res) => {
-  // Validate BEFORE talking to the database
-  if (!req.body.title || !req.body.author) {
-    return res.status(400).json({ error: 'Title and Author are required' });
-  }
-
-  // ... proceed to supabase insert ...
 });
 ```
 
@@ -195,21 +166,18 @@ Postgres (the DB behind Supabase) automatically assigns a unique `id` when you `
 ### Instructions
 
 1. Define a route `/resource/:id`.
-2. Use `.select('*').eq('id', req.params.id)`.
-3. Use `.single()` to tell Supabase we expect exactly one result.
-4. Handle the error (Supabase returns a specific error code for "Row not found").
+2. Use `.select('*').eq('id', req.params.id).single()`.
+3. Return the data with status `200`.
 
 ```javascript:Show Me: GET Single Row
 app.get('/books/:id', async (req, res) => {
-  const { data, error } = await supabase
+  const id = req.params.id;
+  
+  const { data } = await supabase
     .from('books')
     .select('*')
-    .eq('id', req.params.id)
+    .eq('id', id)
     .single(); // Efficiently fetches just one
-
-  if (error) {
-    return res.status(404).json({ error: 'Book not found' });
-  }
 
   res.json(data);
 });
@@ -223,19 +191,69 @@ app.get('/books/:id', async (req, res) => {
 
 1. Define a `DELETE` route.
 2. Use `await supabase.from('your_table').delete().eq('id', req.params.id)`.
-3. Check for errors.
+3. Return a success message with status `200`.
 
 ```javascript:Show Me: DELETE Row
 app.delete('/books/:id', async (req, res) => {
-  const { error } = await supabase
+  const id = req.params.id;
+  
+  await supabase
     .from('books')
     .delete()
-    .eq('id', req.params.id);
+    .eq('id', id);
+
+  res.status(200).json({ message: 'Book deleted successfully' });
+});
+```
+
+## Add Error Handling
+
+**User Story:** As a developer, I want to handle database errors gracefully so that my API provides helpful feedback when things go wrong.
+
+### Concept
+
+Every Supabase operation returns an object with two properties:
+- `data`: The result if successful
+- `error`: An error object if something went wrong
+
+Currently, your routes assume everything works perfectly (the "happy path"). In production, you need to check for errors and respond appropriately.
+
+### Instructions
+
+1. For each route, destructure both `data` and `error` from the Supabase response.
+2. Check if `error` exists. If it does, return an appropriate error status:
+   - `500` for database/server errors
+   - `404` when a resource isn't found (GET by ID)
+   - `400` for validation errors
+3. Only proceed with the success response if no error occurred.
+
+```javascript:Show Me: GET with Error Handling
+app.get('/books', async (req, res) => {
+  const { data, error } = await supabase
+    .from('books')
+    .select('*');
 
   if (error) {
     return res.status(500).json({ error: error.message });
   }
 
-  res.status(200).json({ message: 'Book deleted successfully' });
+  res.json(data);
 });
+```
+
+### 💡 Your Task
+
+Apply the same error handling pattern to all your other routes:
+- POST `/books`
+- GET `/books/:id` (use 404 for not found)
+- DELETE `/books/:id`
+
+### Bonus: Add Validation
+
+Before inserting data, check if required fields exist:
+
+```javascript
+if (!req.body.title || !req.body.author) {
+  return res.status(400).json({ error: 'Title and Author are required' });
+}
 ```
