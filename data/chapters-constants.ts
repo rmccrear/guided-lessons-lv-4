@@ -2,6 +2,7 @@ import { Chapter } from '../types';
 import { SQL_JOINS_RELATIONSHIPS_LESSONS } from './sql-joins-relationships-lessons';
 import { PERSISTENCE_WITH_SUPABASE_LESSONS } from './persistence-with-supabase-lessons';
 import { EXPRESS_SERVER_SETUP_LESSONS } from './express-server-setup-lessons';
+import { DEPLOY_WITH_DIGITAL_OCEAN_LESSONS } from './deploy-with-digital-ocean-lessons';
 import { SQL_INTRO_LESSONS } from './sql-intro-lessons';
 
 export const CHAPTERS: Chapter[] = [
@@ -38,7 +39,6 @@ export const CHAPTERS: Chapter[] = [
     slug: 'deploy-node-do-console',
     title: 'Deploying Node.js via DigitalOcean Console',
     description: 'Deploy a Node.js application to a Droplet using the browser-based terminal, Git, and PM2',
-    lessons: [],
-    markdownPath: '/data/deploy-with-digital-ocean.md'
+    lessons: DEPLOY_WITH_DIGITAL_OCEAN_LESSONS
   }
 ];
