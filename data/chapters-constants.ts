@@ -26,5 +26,13 @@ export const CHAPTERS: Chapter[] = [
     description: 'Build a complete REST API with Express, from setup to in-memory data management',
     lessons: [],
     markdownPath: '/data/express-rest-server-in-memory.md'
+  },
+  {
+    id: 'express-supabase',
+    slug: 'express-supabase',
+    title: 'Express with Supabase',
+    description: 'Transition from in-memory storage to a persistent Postgres database using Supabase',
+    lessons: [],
+    markdownPath: '/data/express-rest-server-supabase-js.md'
   }
 ];
