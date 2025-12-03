@@ -18,7 +18,7 @@ export const DEPLOY_WITH_DIGITAL_OCEAN_LESSONS: Lesson[] = [
   },
   {
     id: "deploy-node-do-console-sign-up-create-your-first-droplet",
-    title: "Sign Up & Create Your First Droplet!",
+    title: "Sign Up & Create Your First Droplet",
     description: "Learn to deploy an existing Node.js application to a Droplet using the browser-based terminal, Git, and process management.",
     type: "exercise",
     content: `
@@ -237,6 +237,10 @@ It looks like four sets of numbers separated by dots (e.g., 147.12.33.201).
 **Goal:** Clone your repository, install dependencies, and configure the firewall to allow traffic on Port 4000.
 
 **User Story:** As a DevOps Engineer, I want to pull my code from a repository and open a network port so that the application is accessible to the outside world.
+
+### How They Work Together
+
+![alt:Show Me: Full-Stack Architecture Diagram showing React frontend on port 5173 making HTTP requests (GET, POST, PUT, DELETE) to Express API on port 3000, which connects to Supabase/Postgres database. Arrows show request flow from browser through CORS-enabled API to database and back.](/data/images/full-stack-architecture-diagram.png)
 
 ### Instructions
 
