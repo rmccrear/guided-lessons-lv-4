@@ -11,7 +11,10 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "parse-lesson": "tsx scripts/parse-lesson.ts",
-    "parse-chapter": "tsx scripts/parse-chapter.ts"
+    "parse-chapter": "tsx scripts/parse-chapter.ts",
+    "sync-chapters": "tsx scripts/update-chapter-constants.ts",
+    "sync-chapters:dev": "tsx scripts/update-chapter-constants.ts dev",
+    "sync-chapters:prod": "tsx scripts/update-chapter-constants.ts production"
   },
   "dependencies": {
     "@azure-rest/ai-inference": "^1.0.0-beta.6",
@@ -27,8 +30,9 @@
     "vite": "^7.2.4"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "^22.19.1",
     "@vitejs/plugin-react": "^5.0.0",
+    "glob": "^13.0.0",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
