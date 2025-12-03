@@ -138,13 +138,22 @@ app.get('/books', async (req, res) => {
 
 ```javascript:Show Me: POST with Supabase
 app.post('/books', async (req, res) => {
+  const { title, author, price } = req.body;
+  
+  const newBook = {
+    title,
+    author,
+    price
+  };
+  
   const { data } = await supabase
     .from('books')
-    .insert(req.body)
-    .select(); // Returns the created record
+    .insert(newBook)
+    .select()
+    .single();
 
   // Supabase returns an array, we want the single object
-  res.status(201).json(data[0]);
+  res.status(201).json(data);
 });
 ```
 
@@ -206,6 +215,60 @@ app.delete('/books/:id', async (req, res) => {
 });
 ```
 
+## Implement PUT by ID
+
+**User Story:** As a user, I want to update existing book information so that I can correct mistakes or reflect changes.
+
+### Overview
+
+The **PUT** method allows you to update an existing resource. With Supabase, you'll:
+1. Use `.update()` to modify a row
+2. Filter by ID with `.eq('id', id)`
+3. Return the updated record
+
+### Instructions
+
+1. Create a `PUT /books/:id` route
+2. Extract the `id` from `req.params`
+3. Get the updated data from `req.body`
+4. Use Supabase's `.update()` method with `.eq()` to target the specific book
+5. Return the updated book data
+
+```javascript:Show Me: PUT Route
+app.put('/books/:id', async (req, res) => {
+  const id = req.params.id;
+  const { title, author, price } = req.body;
+  
+  const updatedBook = {
+    title,
+    author,
+    price
+  };
+  
+  const { data } = await supabase
+    .from('books')
+    .update(updatedBook)
+    .eq('id', id)
+    .select();
+
+  res.json(data[0]);
+});
+```
+
+### 💡 Test It
+
+1. **In Postman**, create a PUT request to `http://localhost:3000/books/1`
+2. Set the body to JSON:
+   ```json
+   {
+     "title": "Updated Title",
+     "author": "Updated Author",
+     "price": 15.99
+   }
+   ```
+3. Send the request and verify the response shows the updated book
+4. Confirm the change persisted by doing a GET request
+
 ## Add Error Handling
 
 **User Story:** As a developer, I want to handle database errors gracefully so that my API provides helpful feedback when things go wrong.
@@ -246,6 +309,7 @@ app.get('/books', async (req, res) => {
 Apply the same error handling pattern to all your other routes:
 - POST `/books`
 - GET `/books/:id` (use 404 for not found)
+- PUT `/books/:id` (use 404 for not found)
 - DELETE `/books/:id`
 
 ### Bonus: Add Validation
@@ -278,11 +342,7 @@ By default, browsers block requests from one origin (e.g., `http://localhost:517
 import cors from 'cors';
 
 // Allow requests from your React app
-app.use(cors({
-  origin: 'http://localhost:5173', // Your React dev server
-  methods: ['GET', 'POST', 'DELETE'],
-  credentials: true
-}));
+app.use(cors());
 
 // For development, you can also use:
 // app.use(cors()); // Allows all origins (not recommended for production!)
