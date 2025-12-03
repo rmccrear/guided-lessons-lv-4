@@ -81,10 +81,19 @@ async function parseChapterMarkdown(chapter: Chapter): Promise<Chapter> {
             const sectionTitleMatch = section.match(/^## (.+)/);
             const sectionTitle = sectionTitleMatch ? sectionTitleMatch[1].trim() : lesson.title;
             
+            // Auto-detect lesson type based on title
+            let lessonType = lesson.type;
+            if (sectionTitle.toLowerCase().includes('challenge')) {
+                lessonType = 'challenge';
+            } else if (sectionTitle.toLowerCase().includes('understanding')) {
+                lessonType = 'reading';
+            }
+            
             return {
                 ...lesson,
                 id: generateLessonId(sectionTitle, chapterMeta.id),
-                title: sectionTitle
+                title: sectionTitle,
+                type: lessonType
             };
         });
 

@@ -448,3 +448,69 @@ export default BookDetails;
 - Add error handling and user feedback
 - Style your app with Tailwind CSS or another styling solution
 - Deploy both the Express API and React app
+
+## Understanding: Frontend vs Backend Architecture
+
+**User Story:** As a full-stack developer, I want to understand how the frontend and backend work together so that I can build complete, scalable applications.
+
+### The Big Picture
+
+You've now built both pieces of a full-stack application:
+- **Backend (Express API)**: Manages data, enforces business logic, and talks to the database
+- **Frontend (React App)**: Displays data to users, handles interactions, and makes API requests
+
+These two systems are **separate** but **connected** through HTTP requests.
+
+### Key Differences
+
+| Aspect | Backend (Express) | Frontend (React) |
+|--------|------------------|------------------|
+| **Runs On** | Server (Node.js) | Browser (JavaScript) |
+| **Purpose** | Data management, security, business logic | User interface, user experience |
+| **Security** | Trusted environment, can store secrets | Untrusted, never store secrets here |
+| **Data Access** | Direct database access | Only via API requests |
+| **Language** | JavaScript (Node.js) | JavaScript (Browser) |
+| **Port** | Usually 3000, 8080, etc. | Usually 5173 (Vite), 3000 (CRA) |
+
+### How They Work Together
+
+![alt:Show Me: Full-Stack Architecture Diagram showing React frontend on port 5173 making HTTP requests (GET, POST, PUT, DELETE) to Express API on port 3000, which connects to Supabase/Postgres database. Arrows show request flow from browser through CORS-enabled API to database and back.](https://placeholder-diagram-url.com/fullstack-architecture.png)
+
+**The Request Flow:**
+
+1. **User Action**: User clicks "Add Book" button in React app
+2. **Frontend Request**: React sends `POST http://localhost:3000/books` with JSON data
+3. **CORS Check**: Express validates the request origin
+4. **Backend Processing**: Express validates data, generates ID, calls Supabase
+5. **Database Operation**: Supabase inserts the row into Postgres
+6. **Response Journey**: Data flows back: Supabase → Express → React
+7. **UI Update**: React displays the new book to the user
+
+### Why Separate Them?
+
+**Scalability**: You can deploy the frontend and backend independently. Update the UI without touching the database logic.
+
+**Security**: The backend protects sensitive operations. Users can't directly manipulate your database.
+
+**Flexibility**: Multiple frontends (web, mobile, desktop) can use the same backend API.
+
+**Development**: Teams can work on frontend and backend simultaneously without conflicts.
+
+### The Connection Point: APIs
+
+Your Express routes (`/books`, `/books/:id`) are the **contract** between frontend and backend:
+- Frontend knows: "To get books, I send GET to `/books`"
+- Backend knows: "When I receive GET `/books`, I return JSON array"
+
+This contract allows both sides to evolve independently, as long as the API structure stays consistent.
+
+### 🎓 You've Built a Full Stack!
+
+Congratulations! You now understand:
+- ✅ How to build RESTful APIs with Express
+- ✅ How to persist data with Supabase/Postgres
+- ✅ How to consume APIs from a React frontend
+- ✅ How to enable cross-origin requests with CORS
+- ✅ The architectural relationship between frontend and backend
+
+This foundation scales to production applications used by millions of users. The same patterns apply whether you're building a simple CRUD app or a complex enterprise system.

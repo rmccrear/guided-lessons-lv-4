@@ -205,13 +205,22 @@ app.get('/books', async (req, res) => {
         summary: "Show Me: POST with Supabase",
         code: `
 app.post('/books', async (req, res) => {
+  const { title, author, price } = req.body;
+  
+  const newBook = {
+    title,
+    author,
+    price
+  };
+  
   const { data } = await supabase
     .from('books')
-    .insert(req.body)
-    .select(); // Returns the created record
+    .insert(newBook)
+    .select()
+    .single();
 
   // Supabase returns an array, we want the single object
-  res.status(201).json(data[0]);
+  res.status(201).json(data);
 });
 `,
         description: "Snippet for: Show Me: POST with Supabase"
@@ -308,6 +317,73 @@ app.delete('/books/:id', async (req, res) => {
     ]
   },
   {
+    id: "persistence-with-supabase-implement-put-by-id",
+    title: "Implement PUT by ID",
+    description: "Transition from in-memory storage to a persistent Postgres database using Supabase.",
+    type: "exercise",
+    content: `
+**User Story:** As a user, I want to update existing book information so that I can correct mistakes or reflect changes.
+
+### Overview
+
+The **PUT** method allows you to update an existing resource. With Supabase, you'll:
+1. Use \`.update()\` to modify a row
+2. Filter by ID with \`.eq('id', id)\`
+3. Return the updated record
+
+### Instructions
+
+1. Create a \`PUT /books/:id\` route
+2. Extract the \`id\` from \`req.params\`
+3. Get the updated data from \`req.body\`
+4. Use Supabase's \`.update()\` method with \`.eq()\` to target the specific book
+5. Return the updated book data
+
+
+
+### 💡 Test It
+
+1. **In Postman**, create a PUT request to \`http://localhost:3000/books/1\`
+2. Set the body to JSON:
+   \`\`\`json
+   {
+     "title": "Updated Title",
+     "author": "Updated Author",
+     "price": 15.99
+   }
+   \`\`\`
+3. Send the request and verify the response shows the updated book
+4. Confirm the change persisted by doing a GET request
+`
+    ,codeSnippets: [
+      {
+        language: "javascript",
+        summary: "Show Me: PUT Route",
+        code: `
+app.put('/books/:id', async (req, res) => {
+  const id = req.params.id;
+  const { title, author, price } = req.body;
+  
+  const updatedBook = {
+    title,
+    author,
+    price
+  };
+  
+  const { data } = await supabase
+    .from('books')
+    .update(updatedBook)
+    .eq('id', id)
+    .select();
+
+  res.json(data[0]);
+});
+`,
+        description: "Snippet for: Show Me: PUT Route"
+      }
+    ]
+  },
+  {
     id: "persistence-with-supabase-add-error-handling",
     title: "Add Error Handling",
     description: "Transition from in-memory storage to a persistent Postgres database using Supabase.",
@@ -339,6 +415,7 @@ Currently, your routes assume everything works perfectly (the "happy path"). In 
 Apply the same error handling pattern to all your other routes:
 - POST \`/books\`
 - GET \`/books/:id\` (use 404 for not found)
+- PUT \`/books/:id\` (use 404 for not found)
 - DELETE \`/books/:id\`
 
 ### Bonus: Add Validation
@@ -435,11 +512,7 @@ By default, browsers block requests from one origin (e.g., \`http://localhost:51
 import cors from 'cors';
 
 // Allow requests from your React app
-app.use(cors({
-  origin: 'http://localhost:5173', // Your React dev server
-  methods: ['GET', 'POST', 'DELETE'],
-  credentials: true
-}));
+app.use(cors());
 
 // For development, you can also use:
 // app.use(cors()); // Allows all origins (not recommended for production!)
@@ -527,5 +600,76 @@ export default BookDetails;
         description: "Snippet for: Show Me: React Component Example Full (GET one by ID)"
       }
     ]
+  },
+  {
+    id: "persistence-with-supabase-understanding-frontend-vs-backend-architecture",
+    title: "Understanding: Frontend vs Backend Architecture",
+    description: "Transition from in-memory storage to a persistent Postgres database using Supabase.",
+    type: "reading",
+    content: `
+**User Story:** As a full-stack developer, I want to understand how the frontend and backend work together so that I can build complete, scalable applications.
+
+### The Big Picture
+
+You've now built both pieces of a full-stack application:
+- **Backend (Express API)**: Manages data, enforces business logic, and talks to the database
+- **Frontend (React App)**: Displays data to users, handles interactions, and makes API requests
+
+These two systems are **separate** but **connected** through HTTP requests.
+
+### Key Differences
+
+| Aspect | Backend (Express) | Frontend (React) |
+|--------|------------------|------------------|
+| **Runs On** | Server (Node.js) | Browser (JavaScript) |
+| **Purpose** | Data management, security, business logic | User interface, user experience |
+| **Security** | Trusted environment, can store secrets | Untrusted, never store secrets here |
+| **Data Access** | Direct database access | Only via API requests |
+| **Language** | JavaScript (Node.js) | JavaScript (Browser) |
+| **Port** | Usually 3000, 8080, etc. | Usually 5173 (Vite), 3000 (CRA) |
+
+### How They Work Together
+
+![alt:Show Me: Full-Stack Architecture Diagram showing React frontend on port 5173 making HTTP requests (GET, POST, PUT, DELETE) to Express API on port 3000, which connects to Supabase/Postgres database. Arrows show request flow from browser through CORS-enabled API to database and back.](https://placeholder-diagram-url.com/fullstack-architecture.png)
+
+**The Request Flow:**
+
+1. **User Action**: User clicks "Add Book" button in React app
+2. **Frontend Request**: React sends \`POST http://localhost:3000/books\` with JSON data
+3. **CORS Check**: Express validates the request origin
+4. **Backend Processing**: Express validates data, generates ID, calls Supabase
+5. **Database Operation**: Supabase inserts the row into Postgres
+6. **Response Journey**: Data flows back: Supabase → Express → React
+7. **UI Update**: React displays the new book to the user
+
+### Why Separate Them?
+
+**Scalability**: You can deploy the frontend and backend independently. Update the UI without touching the database logic.
+
+**Security**: The backend protects sensitive operations. Users can't directly manipulate your database.
+
+**Flexibility**: Multiple frontends (web, mobile, desktop) can use the same backend API.
+
+**Development**: Teams can work on frontend and backend simultaneously without conflicts.
+
+### The Connection Point: APIs
+
+Your Express routes (\`/books\`, \`/books/:id\`) are the **contract** between frontend and backend:
+- Frontend knows: "To get books, I send GET to \`/books\`"
+- Backend knows: "When I receive GET \`/books\`, I return JSON array"
+
+This contract allows both sides to evolve independently, as long as the API structure stays consistent.
+
+### 🎓 You've Built a Full Stack!
+
+Congratulations! You now understand:
+- ✅ How to build RESTful APIs with Express
+- ✅ How to persist data with Supabase/Postgres
+- ✅ How to consume APIs from a React frontend
+- ✅ How to enable cross-origin requests with CORS
+- ✅ The architectural relationship between frontend and backend
+
+This foundation scales to production applications used by millions of users. The same patterns apply whether you're building a simple CRUD app or a complex enterprise system.
+`
   }
 ];

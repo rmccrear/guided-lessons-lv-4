@@ -147,9 +147,11 @@ function processMarkdownFile(inputPath: string): void {
         lesson.id = `${chapterMeta.chapterId}-${slug}`;
         lesson.title = sectionTitle;
         
-        // Auto-detect challenge type if title contains "Challenge"
+        // Auto-detect lesson type based on title
         if (sectionTitle.toLowerCase().includes('challenge')) {
             lesson.type = 'challenge';
+        } else if (sectionTitle.toLowerCase().includes('understanding')) {
+            lesson.type = 'reading';
         } else {
             lesson.type = chapterMeta.type as any;
         }

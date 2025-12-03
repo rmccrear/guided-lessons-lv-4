@@ -147,7 +147,7 @@ app.listen(port, () => {
     id: "express-server-setup-understanding-http-fundamentals",
     title: "Understanding HTTP Fundamentals",
     description: "Initialize a Node project, configure automation scripts, and launch your first Express server.",
-    type: "exercise",
+    type: "reading",
     content: `
 At the core sits the web server: a program that listens for incoming HTTP requests, processes them, and sends back responses. Requests are structured messages that include a verb (like \`GET\` or \`POST\`), a path, headers, and optionally a body.
 
