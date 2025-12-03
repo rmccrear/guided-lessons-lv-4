@@ -22,7 +22,7 @@ Think about a **Soccer Match**.
 
 This is a **1:N (One-to-Many)** relationship.
 
-![An educational diagram illustrating a "One-to-Many" (1:N) database relationship. The graphic is split into two visual metaphors. The top section shows a "Soccer Match" entity on the left connected to multiple "Goal" entities on the right. The bottom section shows a single "Event" entity on the left connected to multiple "Meal" entities on the right. In the center, a standard database connector line is drawn: it has a single vertical hash mark on the left (indicating "One") and a branching crow's foot symbol on the right (indicating "Many").](/assets/sql-join/One-to-Many-Relationship.png)
+![An educational diagram illustrating a "One-to-Many" (1:N) database relationship. The graphic is split into two visual metaphors. The top section shows a "Soccer Match" entity on the left connected to multiple "Goal" entities on the right. The bottom section shows a single "Event" entity on the left connected to multiple "Meal" entities on the right. In the center, a standard database connector line is drawn: it has a single vertical hash mark on the left (indicating "One") and a branching crow's foot symbol on the right (indicating "Many").](./assets/sql-join/One-to-Many-Relationship.png)
 
 In our Potluck app:
 * An **Event** (like "Thanksgiving") has many **Meals**.
@@ -60,7 +60,7 @@ Look at this data from **SQL Zoo**:
 * **Primary Key (PK):** The `id` in the `game` table. It identifies the game uniquely.
 * **Foreign Key (FK):** The `matchid` in the `goal` table. It points back to the game.
 
-![A diagram illustrating the relationship between two database tables. The top table, labeled "game" (Parent), highlights the 'id' column as the Primary Key (PK) with the value 1001. A connector line draws a path from this ID down to the bottom table, labeled "goal" (Child). The line connects to the 'matchid' column, labeled as the Foreign Key (FK), showing that the value 1001 appears in multiple rows to link the goals back to the specific game.](/assets/sql-join/primary-vs-foreign-keys-database-glue.png)
+![A diagram illustrating the relationship between two database tables. The top table, labeled "game" (Parent), highlights the 'id' column as the Primary Key (PK) with the value 1001. A connector line draws a path from this ID down to the bottom table, labeled "goal" (Child). The line connects to the 'matchid' column, labeled as the Foreign Key (FK), showing that the value 1001 appears in multiple rows to link the goals back to the specific game.](./assets/sql-join/primary-vs-foreign-keys-database-glue.png)
 
 ## SQL Zoo: The JOIN Operation
 
@@ -74,7 +74,7 @@ Imagine you have two separate spreadsheets printed out on paper.
 
 To combine them, you would place Sheet B next to Sheet A, lining up every Goal row next to the specific Game row it belongs to. That alignment process is exactly what a `JOIN` does. It stitches the rows together wherever the IDs match.
 
-![A diagram illustrating the SQL JOIN operation. On the left, two tables labeled "Sheet A (Game)" and "Sheet B (Goal)" are shown. Lines connect the id column in the Game table to the matchid column in the Goal table, demonstrating how the data aligns based on matching IDs. On the right, a "JOINED Result" table displays the final output, combining rows to show matchid, player, and stadium columns together in a single view.](/assets/sql-join/sql-join-game-goal-diagram.png)
+![A diagram illustrating the SQL JOIN operation. On the left, two tables labeled "Sheet A (Game)" and "Sheet B (Goal)" are shown. Lines connect the id column in the Game table to the matchid column in the Goal table, demonstrating how the data aligns based on matching IDs. On the right, a "JOINED Result" table displays the final output, combining rows to show matchid, player, and stadium columns together in a single view.](./assets/sql-join/sql-join-game-goal-diagram.png)
 
 ### Instructions
 1.  Open the [SQL Zoo JOIN Operation](https://sqlzoo.net/wiki/The_JOIN_operation) tutorial.
@@ -131,7 +131,7 @@ The `casting` table doesn't hold much information about the movie or the actor i
 
 Each row in `casting` represents a single "ticket" or connection: *"Actor X played a role in Movie Y."*
 
-![A diagram illustrating how to resolve a Many-to-Many relationship in SQL. It displays three tables: "Movie" on the left and "Actor" on the right, which are strictly separated. In the center is the "Casting" table, labeled as the "Join Table." Connector lines visualize the "Three-Table Hop": one line links the Movie ID to the Casting table, and another links the Actor ID to the Casting table, showing how the middle table acts as a bridge to connect movies to their actors.](/assets/sql-join/sql-many-to-many-movie-casting-actor.png)
+![A diagram illustrating how to resolve a Many-to-Many relationship in SQL. It displays three tables: "Movie" on the left and "Actor" on the right, which are strictly separated. In the center is the "Casting" table, labeled as the "Join Table." Connector lines visualize the "Three-Table Hop": one line links the Movie ID to the Casting table, and another links the Actor ID to the Casting table, showing how the middle table acts as a bridge to connect movies to their actors.](./assets/sql-join/sql-many-to-many-movie-casting-actor.png)
 
 ### The "Three-Table Hop"
 
@@ -160,7 +160,7 @@ Did you struggle with Question 7? "List the casting list for the film 'Alien'".
 
 To get this, we had to join three tables: `movie` -> `casting` -> `actor`.
 
-![A database schema diagram illustrating the 3-way JOIN required to list the cast of the film 'Alien'. Three tables are displayed: 'Movie' (left), 'Casting' (center), and 'Actor' (right). Connector lines visualize the relationship: the movie.id joins to casting.movieid, and casting.actorid joins to actor.id. This visualizes how the 'Casting' table acts as a bridge to resolve the many-to-many relationship between movies and actors.:Show Me: The 3-Way JOIN Schema](/assets/sql-join/sql-movie-casting-actor-join-schema.png)
+![A database schema diagram illustrating the 3-way JOIN required to list the cast of the film 'Alien'. Three tables are displayed: 'Movie' (left), 'Casting' (center), and 'Actor' (right). Connector lines visualize the relationship: the movie.id joins to casting.movieid, and casting.actorid joins to actor.id. This visualizes how the 'Casting' table acts as a bridge to resolve the many-to-many relationship between movies and actors.:Show Me: The 3-Way JOIN Schema](./assets/sql-join/sql-movie-casting-actor-join-schema.png)
 
 ### 💡 Code Hints
 
@@ -210,7 +210,7 @@ ONE Meal belongs to ONE Event.
 
 We need to tell the **Meals** which **Event** they belong to. Since a Meal belongs to an Event, the Meal table holds the key (the "Foreign Key").
 
-![A database schema diagram showing the One-to-Many relationship between two tables: potluck_events and potluck_meals. The potluck_events table is shown as the parent table with a primary key id. The potluck_meals table is shown as the child table with a new column highlighted as event_id. A line connects potluck_meals.event_id to potluck_events.id, visually representing the Foreign Key link that assigns specific meals to specific events.](/assets/sql-join/supabase-potluck-foreign-key-schema.png)
+![A database schema diagram showing the One-to-Many relationship between two tables: potluck_events and potluck_meals. The potluck_events table is shown as the parent table with a primary key id. The potluck_meals table is shown as the child table with a new column highlighted as event_id. A line connects potluck_meals.event_id to potluck_events.id, visually representing the Foreign Key link that assigns specific meals to specific events.](./assets/sql-join/supabase-potluck-foreign-key-schema.png)
 
 ### Instructions
 1.  Edit the `potluck_meals` table.
@@ -241,7 +241,7 @@ WHERE event_id = 1;
 
 We must JOIN to ask questions about the Event's **name** or **date**.
 
-![A conceptual SQL diagram illustrating a query filtering by name. On the left, the potluck_events table shows a row with id: 1 and name: 'Summer BBQ'. On the right, the potluck_meals table shows rows with event_id: 1. A directional flow indicates the logic: the query finds 'Summer BBQ' in the first table, grabs the ID (1), and uses that connection to retrieve the matching meals from the second table.](/assets/sql-join/sql-join-filtering-by-event-name.png)
+![A conceptual SQL diagram illustrating a query filtering by name. On the left, the potluck_events table shows a row with id: 1 and name: 'Summer BBQ'. On the right, the potluck_meals table shows rows with event_id: 1. A directional flow indicates the logic: the query finds 'Summer BBQ' in the first table, grabs the ID (1), and uses that connection to retrieve the matching meals from the second table.](./assets/sql-join/sql-join-filtering-by-event-name.png)
 
 ### Challenge
 Write a query to find all meals for the event named 'Summer BBQ'.
@@ -283,7 +283,7 @@ Both of them!
 
 **Goal:** Add the columns in Supabase.
 
-![A database relationship diagram illustrating how Supabase Authentication links to the application data. On the left, a block represents the auth.users table. Two arrows originate from this user table: one points strictly to the user_id column in the potluck_events table (identifying the Host), and the second points strictly to the user_id column in the potluck_meals table (identifying the Cook).](/assets/sql-join/supabase-auth-users-linked-to-events-and-meals.png)
+![A database relationship diagram illustrating how Supabase Authentication links to the application data. On the left, a block represents the auth.users table. Two arrows originate from this user table: one points strictly to the user_id column in the potluck_events table (identifying the Host), and the second points strictly to the user_id column in the potluck_meals table (identifying the Cook).](./assets/sql-join/supabase-auth-users-linked-to-events-and-meals.png)
 
 ### Instructions
 1.  **Update `potluck_events`:**
