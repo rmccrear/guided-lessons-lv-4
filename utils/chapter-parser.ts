@@ -19,7 +19,7 @@ export function splitIntoSections(markdown: string): { frontmatter: string; sect
     
     if (frontMatterMatch) {
         frontmatter = frontMatterMatch[0];
-        content = markdown.slice(frontMatterMatch[0].length);
+        content = prefixed.slice(frontMatterMatch[0].length);
     }
     
     // Split by ## headers (but not ###)
